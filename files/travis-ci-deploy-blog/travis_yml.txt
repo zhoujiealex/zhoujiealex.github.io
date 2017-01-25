@@ -1,0 +1,50 @@
+# Refrecnes:
+# https://zespia.tw/blog/2015/01/21/continuous-deployment-to-github-with-travis/
+# https://docs.travis-ci.com/user/languages/javascript-with-nodejs
+# https://github.com/iissnan/theme-next-docs/blob/master/.travis.yml
+# http://changyuheng.me/2015/when-hexo-static-site-meets-github-pages-and-travis-ci/
+
+language: node_js
+node_js: stable
+
+cache:
+  directories:
+    - node_modules
+
+
+install:
+  - npm install
+
+before_script:
+  - git submodule update --remote --merge
+
+script:
+  - gulp build
+
+after_script:
+  - cd public
+  - git init
+  - git config user.name "karl"
+  - git config user.email "i@think-diff.me"
+  - git add .
+  - git commit -m "Update docs"
+  - git push --force --quiet "https://${GH_TOKEN}@${GIT_PAGE_REF}" master:master
+
+branches:
+  only:
+    - master
+env:
+ global:
+   - GIT_PAGE_REF: github.com/zhoujiealex/zhoujiealex.github.io.git
+   - secure: "<repalce with encrypted token by travis ci client>"
+
+# configure notifications (email, IRC, campfire etc)
+# please update this section to your needs!
+# https://docs.travis-ci.com/user/notifications/
+notifications:
+  email:
+    - i@think-diff.me
+    - zhoujiealex@gmail.com
+  on_success: change
+  on_failure: always
+

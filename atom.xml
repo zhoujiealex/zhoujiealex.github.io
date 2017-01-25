@@ -1,0 +1,947 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Karl&#39;s Notes</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://www.karlzhou.com/"/>
+  <updated>2017-01-25T03:50:18.020Z</updated>
+  <id>https://www.karlzhou.com/</id>
+  
+  <author>
+    <name>Karl</name>
+    <email>i@karlzhou.com</email>
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>优化Hexo博客 - 压缩 HTML、CSS、JS、IMG 等</title>
+    <link href="https://www.karlzhou.com/articles/compress-minify-hexo/"/>
+    <id>https://www.karlzhou.com/articles/compress-minify-hexo/</id>
+    <published>2017-01-25T10:06:18.000Z</published>
+    <updated>2017-01-25T03:50:18.020Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/compress-minify-hexo/compress.jpg" alt="compress"><br>通过压缩可以明显的减少静态资源的体积，加快响应速度。</p>
+<p>半年前我在这篇文章 <a href="/2016/05/28/travis-ci-deploy-blog/#完整配置文件">用Travis CI自动部署Hexo博客</a> 中，简单提到了配合Travis CI，在真正部署之前，<br>自动压缩图片、混淆CSS、JS等资源。有好多朋友还是来信问如何配置，这里再详细介绍下我的做法。</p>
+<p>我使用了 gulp 来定义要执行的压缩任务，而执行真正压缩的是如下几个模块，见名知意：</p>
+<ul>
+<li>clean-css</li>
+<li>htmlclean</li>
+<li>htmlmin</li>
+<li>imagemin</li>
+<li>uglify-js</li>
+</ul>
+<p>每个模块，都有对应的 gulp wrapper 模块。</p>
+<a id="more"></a>
+<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p>为了节省折腾时间（适合懒人），把使用方法放在最前面。</p>
+<p>需要两个文件：</p>
+<ol>
+<li><a href="/files/travis-ci-deploy-blog/package_json.txt">package.json</a></li>
+<li><a href="/files/travis-ci-deploy-blog/gulpfile_js.txt">gulpfile.js</a></li>
+</ol>
+<p>下载后，去掉后缀 txt，放到 Hexo 博客的顶层目录，例如我的：</p>
+<ol>
+<li>karlzhou_com_source/package.json</li>
+<li>karlzhou_com_source/gulpfile.js</li>
+</ol>
+<p>执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 1. 安装依赖</span></div><div class="line">npm install</div><div class="line"></div><div class="line"><span class="comment"># 2. 执行压缩</span></div><div class="line">gulp build</div><div class="line"></div><div class="line"><span class="comment"># 3. 发布</span></div><div class="line">hexo deploy</div></pre></td></tr></table></figure>
+<p>效果：</p>
+<p>压缩前： public文件夹大小</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>压缩前</th>
+<th>压缩后</th>
+<th>压缩比率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>4487KB</td>
+<td>3686 KB</td>
+<td>82.15%</td>
+</tr>
+<tr>
+<td>public/css</td>
+<td>59KB</td>
+<td>44KB</td>
+<td>74.58%</td>
+</tr>
+<tr>
+<td>public/images</td>
+<td>870KB</td>
+<td>741KB</td>
+<td>85.17%</td>
+</tr>
+<tr>
+<td>public/js</td>
+<td>136KB</td>
+<td>84KB</td>
+<td>61.76%</td>
+</tr>
+</tbody>
+</table>
+<p>输出示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">F:\KARL\Personal\B<span class="built_in">log</span>\karlzhou_com_source&gt;gulp build</div><div class="line">[10:34:48] Using gulpfile F:\KARL\Personal\B<span class="built_in">log</span>\karlzhou_com_source\gulpfile.js</div><div class="line">[10:34:48] Starting <span class="string">'build'</span>...</div><div class="line">[10:34:48] Starting <span class="string">'clean'</span>...</div><div class="line">[10:34:48] Finished <span class="string">'clean'</span> after 125 ms</div><div class="line">[10:34:48] Starting <span class="string">'generate'</span>...</div><div class="line">INFO  Start processing</div><div class="line"></div><div class="line">INFO  Files loaded <span class="keyword">in</span> 800 ms</div><div class="line">INFO  Generated: baidusitemap.xml</div><div class="line">...</div><div class="line">INFO  Generated: articles/compress-minify-hexo/index.html</div><div class="line">...</div><div class="line">INFO  151 files generated <span class="keyword">in</span> 3.71 s</div><div class="line">[10:34:54] Finished <span class="string">'generate'</span> after 5.3 s</div><div class="line">[10:34:54] Starting <span class="string">'compress'</span>...</div><div class="line">[10:34:54] Starting <span class="string">'minify-html'</span>...</div><div class="line">[10:34:54] Starting <span class="string">'minify-css'</span>...</div><div class="line">[10:34:54] Starting <span class="string">'minify-js'</span>...</div><div class="line">[10:34:54] Starting <span class="string">'minify-img-aggressive'</span>...</div><div class="line">...</div><div class="line">[10:35:23] gulp-imagemin: Minified 39 images (saved 132 kB - 14.8%)</div><div class="line">[10:35:23] Finished <span class="string">'minify-img-aggressive'</span> after 29 s</div><div class="line">[10:35:23] Finished <span class="string">'compress'</span> after 29 s</div><div class="line">[10:35:23] Finished <span class="string">'build'</span> after 35 s</div></pre></td></tr></table></figure>
+<h1 id="package-json-说明"><a href="#package-json-说明" class="headerlink" title="package.json 说明"></a>package.json 说明</h1><p>介绍下我自己使用的Hexo模块</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="string">"name"</span>: <span class="string">"hexo-karlzhou"</span>,</div><div class="line">  <span class="string">"version"</span>: <span class="string">"0.0.1"</span>,</div><div class="line">  <span class="string">"private"</span>: <span class="literal">true</span>,</div><div class="line">  <span class="string">"hexo"</span>: &#123;</div><div class="line">    <span class="string">"version"</span>: <span class="string">"3.2.2"</span></div><div class="line">  &#125;,</div><div class="line">  <span class="string">"dependencies"</span>: &#123;</div><div class="line">    <span class="string">"hexo"</span>: <span class="string">"^3.2.2"</span>,</div><div class="line">    <span class="string">"hexo-autonofollow"</span>: <span class="string">"^1.0.1"</span>,      <span class="comment"># 自动给外链添加 nofollow， SEO 友好</span></div><div class="line">    <span class="string">"hexo-baidu-url-submit"</span>: <span class="string">"0.0.5"</span>,   <span class="comment"># 主动推送文章链接到baidu，这里是仅仅用来生存url文件，详情见下文。</span></div><div class="line">    <span class="string">"hexo-deployer-git"</span>: <span class="string">"^0.2.0"</span>,</div><div class="line">    <span class="string">"hexo-generator-archive"</span>: <span class="string">"^0.1.4"</span>,</div><div class="line">    <span class="string">"hexo-generator-baidu-sitemap"</span>: <span class="string">"^0.1.2"</span>, <span class="comment"># baidu格式的站点图</span></div><div class="line">    <span class="string">"hexo-generator-category"</span>: <span class="string">"^0.1.3"</span>,</div><div class="line">    <span class="string">"hexo-generator-feed"</span>: <span class="string">"^1.2.0"</span>,</div><div class="line">    <span class="string">"hexo-generator-index"</span>: <span class="string">"^0.2.0"</span>,</div><div class="line">    <span class="string">"hexo-generator-search"</span>: <span class="string">"^1.0.3"</span>,</div><div class="line">    <span class="string">"hexo-generator-sitemap"</span>: <span class="string">"^1.1.2"</span>,</div><div class="line">    <span class="string">"hexo-generator-tag"</span>: <span class="string">"^0.2.0"</span>,</div><div class="line">    <span class="string">"hexo-renderer-ejs"</span>: <span class="string">"^0.2.0"</span>,</div><div class="line">    <span class="string">"hexo-renderer-marked"</span>: <span class="string">"^0.2.11"</span>,</div><div class="line">    <span class="string">"hexo-renderer-stylus"</span>: <span class="string">"^0.3.1"</span>,</div><div class="line">    <span class="string">"hexo-server"</span>: <span class="string">"^0.2.0"</span></div><div class="line">  &#125;,</div><div class="line">  <span class="string">"devDependencies"</span>: &#123;</div><div class="line">    <span class="string">"del"</span>: <span class="string">"^2.2.2"</span>,</div><div class="line">    <span class="string">"gulp"</span>: <span class="string">"^3.9.1"</span>,</div><div class="line">    <span class="string">"gulp-clean-css"</span>: <span class="string">"^2.3.2"</span>,     <span class="comment"># 压缩css</span></div><div class="line">    <span class="string">"gulp-htmlclean"</span>: <span class="string">"^2.7.8"</span>,     <span class="comment"># 处理html</span></div><div class="line">    <span class="string">"gulp-htmlmin"</span>: <span class="string">"^3.0.0"</span>,       <span class="comment"># 压缩html</span></div><div class="line">    <span class="string">"gulp-imagemin"</span>: <span class="string">"^3.1.1"</span>,      <span class="comment"># 压缩图片</span></div><div class="line">    <span class="string">"gulp-uglify"</span>: <span class="string">"^2.0.1"</span>,        <span class="comment"># 处理js</span></div><div class="line">    <span class="string">"run-sequence"</span>: <span class="string">"^1.2.2"</span>        <span class="comment"># 控制任务执行顺序</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="gulp-任务"><a href="#gulp-任务" class="headerlink" title="gulp 任务"></a>gulp 任务</h1><p>参考如下注释。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> gulp = <span class="built_in">require</span>(<span class="string">'gulp'</span>);</div><div class="line"><span class="keyword">var</span> minifycss = <span class="built_in">require</span>(<span class="string">'gulp-clean-css'</span>);</div><div class="line"><span class="keyword">var</span> uglify = <span class="built_in">require</span>(<span class="string">'gulp-uglify'</span>);</div><div class="line"><span class="keyword">var</span> htmlmin = <span class="built_in">require</span>(<span class="string">'gulp-htmlmin'</span>);</div><div class="line"><span class="keyword">var</span> htmlclean = <span class="built_in">require</span>(<span class="string">'gulp-htmlclean'</span>);</div><div class="line"><span class="keyword">var</span> imagemin = <span class="built_in">require</span>(<span class="string">'gulp-imagemin'</span>);</div><div class="line"><span class="keyword">var</span> del = <span class="built_in">require</span>(<span class="string">'del'</span>);</div><div class="line"><span class="keyword">var</span> runSequence = <span class="built_in">require</span>(<span class="string">'run-sequence'</span>);</div><div class="line"><span class="keyword">var</span> Hexo = <span class="built_in">require</span>(<span class="string">'hexo'</span>);</div><div class="line"></div><div class="line"><span class="comment">// 清除public文件夹</span></div><div class="line">gulp.task(<span class="string">'clean'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> del([<span class="string">'public/**/*'</span>]);</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 利用Hexo API 来生成博客内容， 效果和在命令行运行： hexo g 一样</span></div><div class="line"><span class="comment">// generate html with 'hexo generate'</span></div><div class="line"><span class="keyword">var</span> hexo = <span class="keyword">new</span> Hexo(process.cwd(), &#123;&#125;);</div><div class="line">gulp.task(<span class="string">'generate'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">cb</span>) </span>&#123;</div><div class="line">    hexo.init().then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> hexo.call(<span class="string">'generate'</span>, &#123;</div><div class="line">            <span class="attr">watch</span>: <span class="literal">false</span></div><div class="line">        &#125;);</div><div class="line">    &#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> hexo.exit();</div><div class="line">    &#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> cb()</div><div class="line">    &#125;).catch(<span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(err);</div><div class="line">        hexo.exit(err);</div><div class="line">        <span class="keyword">return</span> cb(err);</div><div class="line">    &#125;)</div><div class="line">&#125;)</div><div class="line"></div><div class="line"><span class="comment">// 压缩public目录下的所有css</span></div><div class="line">gulp.task(<span class="string">'minify-css'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> gulp.src(<span class="string">'./public/**/*.css'</span>)</div><div class="line">        .pipe(minifycss(&#123;</div><div class="line">            <span class="attr">compatibility</span>: <span class="string">'ie8'</span></div><div class="line">        &#125;))</div><div class="line">        .pipe(gulp.dest(<span class="string">'./public'</span>));</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 压缩public目录下的所有html</span></div><div class="line">gulp.task(<span class="string">'minify-html'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> gulp.src(<span class="string">'./public/**/*.html'</span>)</div><div class="line">        .pipe(htmlclean())</div><div class="line">        .pipe(htmlmin(&#123;</div><div class="line">            <span class="attr">removeComments</span>: <span class="literal">true</span>,</div><div class="line">            <span class="attr">minifyJS</span>: <span class="literal">true</span>,</div><div class="line">            <span class="attr">minifyCSS</span>: <span class="literal">true</span>,</div><div class="line">            <span class="attr">minifyURLs</span>: <span class="literal">true</span>,</div><div class="line">        &#125;))</div><div class="line">        .pipe(gulp.dest(<span class="string">'./public'</span>))</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 压缩public目录下的所有js</span></div><div class="line">gulp.task(<span class="string">'minify-js'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> gulp.src(<span class="string">'./public/**/*.js'</span>)</div><div class="line">        .pipe(uglify())</div><div class="line">        .pipe(gulp.dest(<span class="string">'./public'</span>));</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 压缩public目录下的所有img： 这个采用默认配置</span></div><div class="line">gulp.task(<span class="string">'minify-img'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> gulp.src(<span class="string">'./public/images/**/*.*'</span>)</div><div class="line">        .pipe(imagemin())</div><div class="line">        .pipe(gulp.dest(<span class="string">'./public/images'</span>))</div><div class="line">&#125;)</div><div class="line"></div><div class="line"><span class="comment">// 同上，压缩图片，这里采用了： 最大化压缩效果。</span></div><div class="line">gulp.task(<span class="string">'minify-img-aggressive'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> gulp.src(<span class="string">'./public/images/**/*.*'</span>)</div><div class="line">        .pipe(imagemin(</div><div class="line">        [imagemin.gifsicle(&#123;<span class="string">'optimizationLevel'</span>: <span class="number">3</span>&#125;), </div><div class="line">        imagemin.jpegtran(&#123;<span class="string">'progressive'</span>: <span class="literal">true</span>&#125;), </div><div class="line">        imagemin.optipng(&#123;<span class="string">'optimizationLevel'</span>: <span class="number">7</span>&#125;), </div><div class="line">        imagemin.svgo()],</div><div class="line">        &#123;<span class="string">'verbose'</span>: <span class="literal">true</span>&#125;))</div><div class="line">        .pipe(gulp.dest(<span class="string">'./public/images'</span>))</div><div class="line">&#125;)</div><div class="line"></div><div class="line"><span class="comment">// 用run-sequence并发执行，同时处理html，css，js，img</span></div><div class="line">gulp.task(<span class="string">'compress'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">cb</span>) </span>&#123;</div><div class="line">    runSequence([<span class="string">'minify-html'</span>, <span class="string">'minify-css'</span>, <span class="string">'minify-js'</span>, <span class="string">'minify-img-aggressive'</span>], cb);</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 执行顺序： 清除public目录 -&gt; 产生原始博客内容 -&gt; 执行压缩混淆</span></div><div class="line">gulp.task(<span class="string">'build'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">cb</span>) </span>&#123;</div><div class="line">    runSequence(<span class="string">'clean'</span>, <span class="string">'generate'</span>, <span class="string">'compress'</span>, cb)</div><div class="line">&#125;);</div><div class="line"></div><div class="line">gulp.task(<span class="string">'default'</span>, [<span class="string">'build'</span>])</div></pre></td></tr></table></figure></p>
+<h1 id="百度主动推送"><a href="#百度主动推送" class="headerlink" title="百度主动推送"></a>百度主动推送</h1><p>这个模块 <code>hexo-baidu-url-submit</code>，会在 public 下生成博客的url链接。</p>
+<p>具体使用方法，参考 <a href="https://github.com/huiwang/hexo-baidu-url-submit" rel="external nofollow noopener noreferrer" target="_blank">https://github.com/huiwang/hexo-baidu-url-submit</a>。</p>
+<p>需要在 顶层的 <code>_config.yml</code>， 配置下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Baidu submit</span></div><div class="line">baidu_url_submit:</div><div class="line">  count: 10                     <span class="comment">## 比如3，代表提交最新的三个链接</span></div><div class="line">  host: www.karlzhou.com        <span class="comment">## 在百度站长平台中注册的域名</span></div><div class="line">  token: NO_NEED                <span class="comment">## 请注意这是您的秘钥， 请不要发布在公众仓库里! 我用了travis 所以用curl发送即可</span></div><div class="line">  path: baidu_urls.txt</div></pre></td></tr></table></figure>
+<p>最终url文件位于： <code>./public/baidu_urls.txt</code></p>
+<p>这里是我用 Travis CI 来自动推送生成的 txt 文件， 并没有用这个模块自带的生成方式。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># .travis.yml</span></div><div class="line"></div><div class="line">after_success:</div><div class="line">- <span class="built_in">cd</span> public</div><div class="line">- git init</div><div class="line">- git config user.name <span class="string">"Karl Zhou"</span></div><div class="line">- git config user.email <span class="string">"i@karlzhou.com"</span></div><div class="line">- git add .</div><div class="line">- git commit -m <span class="string">"Update docs"</span></div><div class="line">- git push --force --quiet <span class="string">"https://<span class="variable">$&#123;GH_TOKEN&#125;</span>@<span class="variable">$&#123;GIT_PAGE_REF&#125;</span>"</span> master:master</div><div class="line">- curl -H <span class="string">'Content-Type:text/plain'</span> --data-binary @baidu_urls.txt <span class="string">"http://data.zz.baidu.com/urls?site=www.karlzhou.com&amp;token=<span class="variable">$&#123;baidu_submit_token&#125;</span>"</span></div></pre></td></tr></table></figure>
+<p>其中的环境变量 <code>baidu_submit_token</code>，是保存在 Travis CI里面的，安全！</p>
+<p>baidu 推送 token 获取参考: <a href="http://zhanzhang.baidu.com/linksubmit/index" rel="external nofollow noopener noreferrer" target="_blank">百度站长链接提交：主动推送（实时）</a>。curl推送示例：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">将要提交的链接按照每行一条的格式写入一个文本文件中，命名此文件为urls.txt，然后进入该文件所在目录，执行如下命令：</div><div class="line">curl -H <span class="string">'Content-Type:text/plain'</span> --data-binary @urls.txt <span class="string">"http://data.zz.baidu.com/urls?site=www.karlzhou.com&amp;token=Aen1csVmYZo40Xi1"</span></div></pre></td></tr></table></figure></p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ol>
+<li><a href="https://hexo.io/api/#Execute-Commands" rel="external nofollow noopener noreferrer" target="_blank">Hexo API Execute Commands</a></li>
+<li><a href="https://github.com/chrisjlee/hexo-theme-zurb-foundation/blob/master/gulpfile.js" rel="external nofollow noopener noreferrer" target="_blank">hexo-theme-zurb-foundation gulp.js 示例</a></li>
+<li><a href="https://github.com/gulpjs/gulp/blob/master/docs/recipes/delete-files-folder.md" rel="external nofollow noopener noreferrer" target="_blank">Gulp Delete files and folders</a></li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/compress-minify-hexo/compress.jpg&quot; alt=&quot;compress&quot;&gt;&lt;br&gt;通过压缩可以明显的减少静态资源的体积，加快响应速度。&lt;/p&gt;
+&lt;p&gt;半年前我在这篇文章 &lt;a href=&quot;/2016/05/28/travis-ci-deploy-blog/#完整配置文件&quot;&gt;用Travis CI自动部署Hexo博客&lt;/a&gt; 中，简单提到了配合Travis CI，在真正部署之前，&lt;br&gt;自动压缩图片、混淆CSS、JS等资源。有好多朋友还是来信问如何配置，这里再详细介绍下我的做法。&lt;/p&gt;
+&lt;p&gt;我使用了 gulp 来定义要执行的压缩任务，而执行真正压缩的是如下几个模块，见名知意：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;clean-css&lt;/li&gt;
+&lt;li&gt;htmlclean&lt;/li&gt;
+&lt;li&gt;htmlmin&lt;/li&gt;
+&lt;li&gt;imagemin&lt;/li&gt;
+&lt;li&gt;uglify-js&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;每个模块，都有对应的 gulp wrapper 模块。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Blog" scheme="https://www.karlzhou.com/categories/Blog/"/>
+    
+    
+      <category term="Hexo" scheme="https://www.karlzhou.com/tags/Hexo/"/>
+    
+      <category term="gulp" scheme="https://www.karlzhou.com/tags/gulp/"/>
+    
+      <category term="Node.js" scheme="https://www.karlzhou.com/tags/Node-js/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CentOS6.x 升级Python2.7</title>
+    <link href="https://www.karlzhou.com/articles/upgrade-python2.7-centos-simplest-way/"/>
+    <id>https://www.karlzhou.com/articles/upgrade-python2.7-centos-simplest-way/</id>
+    <published>2017-01-24T17:03:05.000Z</published>
+    <updated>2017-01-25T03:50:18.020Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/upgrade-python/linux-python-logo.jpg" alt="logrtate log"></p>
+<p>最近有些小伙伴还是被这个常见的需求坑到了，整理下屡试不爽的宇宙最简单的升级步骤，验证无数次。</p>
+<h1 id="最简单的安装步骤"><a href="#最简单的安装步骤" class="headerlink" title="最简单的安装步骤"></a>最简单的安装步骤</h1><p>CentOS6.x 最简单的升级Python2.7的方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">yum groupinstall <span class="string">"Development tools"</span></div><div class="line">yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel</div><div class="line"></div><div class="line"><span class="comment"># Python 2.7.13:</span></div><div class="line">wget https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tar.xz --no-check-certificate</div><div class="line">tar xf Python-2.7.13.tar.xz</div><div class="line"><span class="built_in">cd</span> Python-2.7.13</div><div class="line"></div><div class="line">./configure --prefix=/usr/<span class="built_in">local</span> --enable-unicode=ucs4 --enable-shared LDFLAGS=<span class="string">"-Wl,-rpath /usr/local/lib"</span></div><div class="line">make &amp;&amp; make altinstall</div></pre></td></tr></table></figure>
+<p>DONE！ 新的 Python2.7 bin 位于： <code>/usr/local/bin/python2.7</code>。</p>
+<a id="more"></a>
+<h2 id="编译参数说明"><a href="#编译参数说明" class="headerlink" title="编译参数说明"></a>编译参数说明</h2><ul>
+<li><p><code>--enable-unicode=ucs4 --enable-shared</code> 这两个参数，凡是尝试安装过Oracle模块 <code>cx_Oracle</code> 都踩过这个坑，不解释。</p>
+</li>
+<li><p>使用<code>altinstall</code>，可以保留系统默认的python环境，不会做任何改动，如有需要请自行设置软连接。 </p>
+</li>
+</ul>
+<h1 id="安装pip"><a href="#安装pip" class="headerlink" title="安装pip"></a>安装pip</h1><p>方法一：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget https://bootstrap.pypa.io/get-pip.py --no-check-certificate</div><div class="line">/usr/<span class="built_in">local</span>/bin/python2.7 get-pip.py</div></pre></td></tr></table></figure>
+<p>国内网络不行，经常连不上，出现问题，请尝试用如下方法二。</p>
+<p>方法二：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">wget https://bootstrap.pypa.io/ez_setup.py --no-check-certificate</div><div class="line">sudo /usr/<span class="built_in">local</span>/bin/python2.7 ez_setup.py</div><div class="line">sudo /usr/<span class="built_in">local</span>/bin/easy_install-2.7 pip</div></pre></td></tr></table></figure></p>
+<h1 id="设置软连接"><a href="#设置软连接" class="headerlink" title="设置软连接"></a>设置软连接</h1><p>如有需要，可以<strong>谨慎覆盖</strong>掉系统默认的python： <code>/usr/bin/python</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">rm /usr/bin/python</div><div class="line">ln <span class="_">-s</span> /usr/<span class="built_in">local</span>/bin/python2.7 /usr/bin/python</div></pre></td></tr></table></figure>
+<p><strong>恢复系统默认python2.6</strong>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">rm /usr/bin/python</div><div class="line">ln <span class="_">-s</span> /usr/bin/python2.6 /usr/bin/python</div></pre></td></tr></table></figure></p>
+<h1 id="修复yum"><a href="#修复yum" class="headerlink" title="修复yum"></a>修复yum</h1><p>如果覆盖了系统的自带python，则需要修复下yum（依赖默认的python2.6）。</p>
+<p>编辑 <code>/usr/bin/yum</code>，修改第一行的 <a href="https://zh.wikipedia.org/wiki/Shebang" rel="external nofollow noopener noreferrer" target="_blank">Shebang</a> 为：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">//原始为：<span class="comment">#!/usr/bin/python</span></div><div class="line"></div><div class="line"><span class="comment">#!/usr/bin/python2.6</span></div></pre></td></tr></table></figure></p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ol>
+<li><a href="https://github.com/h2oai/h2o-2/wiki/Installing-python-2.7-on-centos-6.3.-Follow-this-sequence-exactly-for-centos-machine-only" rel="external nofollow noopener noreferrer" target="_blank">Installing python 2.7 on centos 6.3. Follow this sequence exactly for centos machine only</a></li>
+<li><a href="http://toomuchdata.com/2014/02/16/how-to-install-python-on-centos/" rel="external nofollow noopener noreferrer" target="_blank">How to install Python 2.7 and Python 3.3 on CentOS 6</a></li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/upgrade-python/linux-python-logo.jpg&quot; alt=&quot;logrtate log&quot;&gt;&lt;/p&gt;
+&lt;p&gt;最近有些小伙伴还是被这个常见的需求坑到了，整理下屡试不爽的宇宙最简单的升级步骤，验证无数次。&lt;/p&gt;
+&lt;h1 id=&quot;最简单的安装步骤&quot;&gt;&lt;a href=&quot;#最简单的安装步骤&quot; class=&quot;headerlink&quot; title=&quot;最简单的安装步骤&quot;&gt;&lt;/a&gt;最简单的安装步骤&lt;/h1&gt;&lt;p&gt;CentOS6.x 最简单的升级Python2.7的方法：&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;yum groupinstall &lt;span class=&quot;string&quot;&gt;&quot;Development tools&quot;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# Python 2.7.13:&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;wget https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tar.xz --no-check-certificate&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;tar xf Python-2.7.13.tar.xz&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;cd&lt;/span&gt; Python-2.7.13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;./configure --prefix=/usr/&lt;span class=&quot;built_in&quot;&gt;local&lt;/span&gt; --enable-unicode=ucs4 --enable-shared LDFLAGS=&lt;span class=&quot;string&quot;&gt;&quot;-Wl,-rpath /usr/local/lib&quot;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;make &amp;amp;&amp;amp; make altinstall&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;DONE！ 新的 Python2.7 bin 位于： &lt;code&gt;/usr/local/bin/python2.7&lt;/code&gt;。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Python" scheme="https://www.karlzhou.com/categories/Python/"/>
+    
+    
+      <category term="Linux" scheme="https://www.karlzhou.com/tags/Linux/"/>
+    
+      <category term="Python" scheme="https://www.karlzhou.com/tags/Python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>日志集中化收集（二）：logrotate 配置</title>
+    <link href="https://www.karlzhou.com/articles/center-log-with-logrotate/"/>
+    <id>https://www.karlzhou.com/articles/center-log-with-logrotate/</id>
+    <published>2017-01-03T21:55:03.000Z</published>
+    <updated>2017-01-25T03:50:18.020Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/center-log/paille-truck.jpg" alt="logrtate log"></p>
+<p>本文接上篇  <a href="/articles/center-log-with-rsyslog/">日志集中化收集（一）：rsyslog 配置</a>。<br>用 rsyslog 收集了上百G的日志后，得用另一个Linux自带的脚本：<br> <code>/usr/sbin/logrotate</code> 自动的压缩，分割，归档好历史日志。</p>
+<a id="more"></a>
+<h1 id="logrotate-简介"><a href="#logrotate-简介" class="headerlink" title="logrotate 简介"></a>logrotate 简介</h1><p>logrotate （<a href="https://github.com/logrotate/logrotate" rel="external nofollow noopener noreferrer" target="_blank">GitHub 地址</a>） 诞生于 <a href="https://github.com/logrotate/logrotate/releases" rel="external nofollow noopener noreferrer" target="_blank">1996/11/19</a> ，当前（2017/01/03）最新版本 <a href="https://github.com/logrotate/logrotate/releases/tag/3.11.0" rel="external nofollow noopener noreferrer" target="_blank">3.11.0</a>。</p>
+<blockquote>
+<p>logrotate - rotates, compresses, and mails system logs</p>
+</blockquote>
+<p>测试机器 CentOS 6.8 Final， 系统自带的版本为 3.7.8： </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ logrotate -v</div><div class="line">logrotate 3.7.8 - Copyright (C) 1995-2001 Red Hat, Inc.   </div><div class="line"></div><div class="line">Usage: logrotate [-dfv?] [<span class="_">-d</span>|--debug] [<span class="_">-f</span>|--force] [-m|--mail <span class="built_in">command</span>] [<span class="_">-s</span>|--state statefile] [-v|--verbose] [-?|--help] [--usage] [OPTION...] &lt;configfile&gt;</div></pre></td></tr></table></figure>
+<p>最新版本，需要自行下载源码编译安装。</p>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>执行文件： <code>/usr/sbin/logrotate</code><br>主配置文件: <code>/etc/logrotate.conf</code><br>自定义配置文件: <code>/etc/logrotate.d/*.conf</code></p>
+<p>修改配置文件后，并不需要重启服务。<br>由于 logrotate 实际上只是一个可执行文件，不是以daemon运行。</p>
+<p><code>/etc/logrotate.conf</code> - 顶层主配置文件，通过 <code>include</code> 指令，会引入 <code>/etc/logrotate.d</code> 下的配置文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># see "man logrotate" for details</span></div><div class="line">weekly</div><div class="line">rotate 4</div><div class="line"><span class="comment"># create new (empty) log files after rotating old ones</span></div><div class="line">create</div><div class="line"><span class="comment"># use date as a suffix of the rotated file</span></div><div class="line">dateext</div><div class="line"><span class="comment"># uncomment this if you want your log files compressed</span></div><div class="line"><span class="comment">#compress</span></div><div class="line"><span class="comment"># RPM packages drop log rotation information into this directory</span></div><div class="line">include /etc/logrotate.d</div><div class="line"><span class="comment"># no packages own wtmp and btmp -- we'll rotate them here</span></div><div class="line">/var/<span class="built_in">log</span>/wtmp &#123;</div><div class="line">    monthly</div><div class="line">    create 0664 root utmp</div><div class="line">        minsize 1M</div><div class="line">    rotate 1</div><div class="line">&#125;</div><div class="line"></div><div class="line">/var/<span class="built_in">log</span>/btmp &#123;</div><div class="line">    missingok</div><div class="line">    monthly</div><div class="line">    create 0600 root utmp</div><div class="line">    rotate 1</div><div class="line">&#125;</div><div class="line"><span class="comment"># system-specific logs may be also be configured here.</span></div></pre></td></tr></table></figure></p>
+<p><code>/etc/logrotate.d/</code> - 通常一些第三方软件包，会把自己私有的配置文件，也放到这个目录下。 如 yum， zabbix-agent，syslog 等。 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/logrotate.d/yum</div><div class="line">/var/<span class="built_in">log</span>/yum.log &#123;</div><div class="line">    missingok</div><div class="line">    notifempty</div><div class="line">    size 30k</div><div class="line">    yearly</div><div class="line">    create 0600 root root</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="运行-logrotate"><a href="#运行-logrotate" class="headerlink" title="运行 logrotate"></a>运行 logrotate</h2><p><strong>crontab</strong>定时：<br>通常惯用的做法是配合 <code>crontab</code> 来定时调用。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ crontab <span class="_">-e</span></div><div class="line"></div><div class="line">*/30 * * * * /usr/sbin/logrotate /etc/logrotate.d/rsyslog &gt; /dev/null 2&gt;&amp;1 &amp;</div></pre></td></tr></table></figure></p>
+<p>在调试自定义配置的时候，我们需要手动运行，来确保是按照我们所需运行的。</p>
+<p><strong>手动运行</strong>：<br>debug 模式： 指定 <code>[-d|--debug]</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">logrotate <span class="_">-d</span> &lt;configfile&gt;</div></pre></td></tr></table></figure></p>
+<p>并不会真正进行 rotate 或者 compress 操作，但是会打印出整个执行的流程，和调用的脚本等详细信息。</p>
+<p>verbose 模式： 指定 <code>[-v|--verbose]</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">logrotate -v &lt;configfile&gt;</div></pre></td></tr></table></figure></p>
+<p>会真正执行操作，打印出详细信息（debug模式，默认是开启verbose）</p>
+<p><strong>系统自带</strong> cron task： <code>/etc/cron.daily/logrotate</code>，每天运行一次。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/cron.daily/logrotate</div><div class="line"><span class="meta">#!/bin/sh</span></div><div class="line"></div><div class="line">/usr/sbin/logrotate /etc/logrotate.conf &gt;/dev/null 2&gt;&amp;1</div><div class="line">EXITVALUE=$?</div><div class="line"><span class="keyword">if</span> [ <span class="variable">$EXITVALUE</span> != 0 ]; <span class="keyword">then</span></div><div class="line">    /usr/bin/logger -t logrotate <span class="string">"ALERT exited abnormally with [<span class="variable">$EXITVALUE</span>]"</span></div><div class="line"><span class="keyword">fi</span></div><div class="line"><span class="built_in">exit</span> 0</div></pre></td></tr></table></figure>
+<h1 id="logrotate-参数"><a href="#logrotate-参数" class="headerlink" title="logrotate 参数"></a>logrotate 参数</h1><p>详细介绍请自行 <code>man logrotate</code>， 或者<a href="https://linux.die.net/man/8/logrotate" rel="external nofollow noopener noreferrer" target="_blank">在线 man page</a>。</p>
+<p>主要介绍下完成常用需求会用到的一些参数。</p>
+<p>一个典型的配置文件如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">/Data/logs/production/*/*/*.log</div><div class="line">/Data/logs/erp/*/*/*.log</div><div class="line">/Data/logs/erp/mq_order/*/*/*.log</div><div class="line">&#123;</div><div class="line">   prerotate</div><div class="line">		<span class="comment"># ....</span></div><div class="line">   endscript</div><div class="line"></div><div class="line">   <span class="comment">#daily</span></div><div class="line">   rotate 10</div><div class="line">   size 5M</div><div class="line">   create 0644 karltest karltest</div><div class="line">   dateformat  -%Y%m%d-%s</div><div class="line">   compress</div><div class="line">   missingok</div><div class="line"></div><div class="line">   postrotate</div><div class="line">     /bin/<span class="built_in">kill</span> -HUP $(/bin/cat /var/run/syslogd.pid 2&gt;/dev/null) &amp;&gt;/dev/null</div><div class="line">   endscript</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>第一部分是匹配的文件pattern，可以是通配符，<strong>注意：如果对应的log不存在会报错，中断处理</strong>，可以自行用 debug 模式测试。（可以添加 <code>missingok</code> 缓解）</p>
+<p><code>{ ... }</code> 花括号里面的就是具体的指令参数了， logrotate 支持一些hook预处理，可以在rotate执行之前或者之后调用命令或者自己的脚本。</p>
+<p>最常见的需求：</p>
+<ul>
+<li>限制大小： size 1k (如 5M， 2G)</li>
+<li>压缩： compress， 默认gzip，后缀为gz。  也可以指定其他压缩程序，如bzip2，后缀名也可以修改。</li>
+<li><code>create &lt;user&gt; &lt;group&gt;</code></li>
+<li>保留个数： rotate <num></num></li>
+<li>dateformat: rotate的文件后缀格式</li>
+<li>postrotate： 这个是最常用的，用来 reopen 被rotate后的文件，详见下文 <a href="#reopen">Trouble Shooting</a>。</li>
+<li>其余hook:<ul>
+<li>prerotate/endscript</li>
+<li>firstaction/endscript</li>
+<li>lastaction/endscript</li>
+<li>preremove/endscript</li>
+<li>sharedscripts</li>
+</ul>
+</li>
+</ul>
+<h1 id="日志集中化的配置"><a href="#日志集中化的配置" class="headerlink" title="日志集中化的配置"></a>日志集中化的配置</h1><p>介绍完基础知识后，回归到日志集中化收集的任务上来。</p>
+<p>回顾下，最终 rsyslog 收集组成的文件夹结构：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># tree -I "*gz|*log" /Data/logs/</span></div><div class="line">/Data/logs/</div><div class="line">├── gateway</div><div class="line">│   ├── 172.31.70.18</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.19</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.195</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.197</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.198</div><div class="line">│   │   └── archived</div><div class="line">│   └── 172.31.70.20</div><div class="line">│       └── archived</div><div class="line">├── product</div><div class="line">│   ├── 172.31.70.118</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.119</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.23</div><div class="line">│   │   └── archived</div><div class="line">│   └── 172.31.70.24</div><div class="line">│       └── archived</div><div class="line">...</div><div class="line"></div><div class="line"><span class="comment"># du -sh /Data/logs</span></div><div class="line">271G    /Data/logs</div></pre></td></tr></table></figure>
+<p>需求：</p>
+<ol>
+<li>大小超过1G压缩</li>
+<li>每天归档 *.gz 的压缩包到 <code>archived</code>目录下，也就是说当前目录只保留当天的日志</li>
+<li>保留一个月的备份</li>
+</ol>
+<p>这些需求，单独的logrotate并不能完成，所以我写了个 shell 脚本，来完成额外的功能。</p>
+<h2 id="logrotate-配置"><a href="#logrotate-配置" class="headerlink" title="logrotate 配置"></a>logrotate 配置</h2><p>监控多个目录，压缩文件，移至目录 <code>olddir archived</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/logrotate.d/karltest-custom-conf/logrotate-karltest-log-quick-run.conf</div><div class="line">/Data/logs/karltest/*/*/*.log</div><div class="line">/Data/logs/erp/*/*/*.log</div><div class="line">/Data/logs/erp/mq_order/*/*/*.log</div><div class="line">&#123;</div><div class="line">   rotate 32</div><div class="line">   size 1024M					<span class="comment"># 对于 *-daily-run.conf，设置了较小阈值 5M</span></div><div class="line">   create 0644 karltest karltest</div><div class="line">   <span class="comment">#dateformat  -%Y%m%d-%s			# 时间戳，已经由rsyslog产生了，这里不需要</span></div><div class="line">   compress</div><div class="line">   missingok</div><div class="line">   olddir archived				<span class="comment"># 归档目录</span></div><div class="line">   postrotate					<span class="comment"># 重启 rsyslog，让其 reopen 新的同名文件</span></div><div class="line">     /bin/<span class="built_in">kill</span> -HUP $(/bin/cat /var/run/syslogd.pid 2&gt;/dev/null) &amp;&gt;/dev/null</div><div class="line">   endscript</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>实际上，我准备了两个 conf 文件： <code>*-daily-run.conf</code> 和 <code>*-quick-run.conf</code>，唯一的区别就是 <strong>size 阈值</strong>。<br>希望达成这样的效果：</p>
+<ul>
+<li>较大阈值的配置文件，运行的更频繁些，防止磁盘爆掉。</li>
+<li>较小阈值的配置文件，更多的是整理的作用，每天00：01分运行一次，来移动前一天的所有日志（即使很小），归档到archived目录</li>
+</ul>
+<h2 id="crontab-设置"><a href="#crontab-设置" class="headerlink" title="crontab 设置"></a>crontab 设置</h2><p><em>这里我是用 Ansible 来配置的logcenter 机器上的的定时任务。</em></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ crontab <span class="_">-l</span></div><div class="line"><span class="comment">#Ansible: For server: Daily run - logrotate *.log under /Data/logs</span></div><div class="line">1 0 * * * /bin/sh /Data/logs/.run_logrotate.sh create /etc/logrotate.d/karltest-custom-conf/logrotate-karltest-log-daily.conf -v &gt;&gt; /Data/logs/karltest_log_rotate_history.log 2&gt;&amp;1 &amp;</div><div class="line"><span class="comment">#Ansible: For server: Quick run - logrotate *.log under /Data/logs</span></div><div class="line">23 6,12,18 * * * /bin/sh /Data/logs/.run_logrotate.sh create /etc/logrotate.d/karltest-custom-conf/logrotate-karltest-log-quick-run.conf -v &gt;&gt; /Data/logs/karltest_log_rotate_history.log 2&gt;&amp;1 &amp;</div><div class="line"><span class="comment">#Ansible: For server: older than file under /Data/logs</span></div><div class="line">28 4 * * *  /usr/bin/find /Data/logs -type f -mtime +30 -delete &gt;&gt; /Data/logs/karltest_log_rotate_history.log 2&gt;&amp;1 &amp;</div></pre></td></tr></table></figure>
+<p>说明：</p>
+<ul>
+<li>每天 00:01 运行较小阈值的配置文件</li>
+<li>每天 6/12/18:23 运行较大阈值的配置文件</li>
+<li>每天 4:28 执行一次清理工作：删除最近30天（<code>-mtime +30</code>）没有修改的文件</li>
+</ul>
+<h2 id="自定义的脚本"><a href="#自定义的脚本" class="headerlink" title="自定义的脚本"></a>自定义的脚本</h2><p>完整文件在这里 <a href="/files/center-log/run_logrotate.sh.txt">run_logrotate.sh</a>。</p>
+<p>主要功能：</p>
+<ul>
+<li><code>create_folder</code> - 创建archived folder， 因为 logrotate 的 <code>olddir</code> 指向的目录，必须存在</li>
+<li><code>moveold</code> - 移动最近一天没有修改的文件，到 <code>olddir</code> 指向的目录，主要和<code>daily.conf</code> 互补， 因为 小于5M的并不会被压缩，对于某些 error.log经常只有10k。</li>
+<li><code>clean_dummy_file</code> - 删除大小为0的文件，因为 在每天的0点， rsyslog会向新的日期文件里写日志，此时，由于logrotate的作用，会多出一个大小为0的空旧日期的文件。</li>
+</ul>
+<p><strong>其实这个脚本才是我花工作量最大的地方</strong>。上面的功能点，也是我调试的时候遇到的一些坑。</p>
+<h1 id="Trouble-Shooting"><a href="#Trouble-Shooting" class="headerlink" title="Trouble Shooting"></a>Trouble Shooting</h1><h2 id="自定义的log压缩，每天多运行一次"><a href="#自定义的log压缩，每天多运行一次" class="headerlink" title="自定义的log压缩，每天多运行一次"></a>自定义的log压缩，每天多运行一次</h2><p><strong>现象</strong>：在每天03:47时候，多运行了一次，但是 <code>crontab -l</code> 里，并没有配置。<br><strong>原因</strong>：系统自带的 <code>/etc/cron.daily/logrotate</code>， 每天会自己运行一次。<br><strong>解决</strong>：把自定义的配置文件，放到别的目录，或者 移到下层目录： <code>/etc/logrotat.d/karltest_conf/*.conf</code> </p>
+<p><strong>多问一句</strong>： 为啥时间是03：47呢，有时候随机是03：xx别的时间，而不是每天的00:00呢？<br>详情参考：<a href="http://serverfault.com/questions/135906/when-does-cron-daily-run" rel="external nofollow noopener noreferrer" target="_blank">When does <code>cron.daily</code> run?</a> 和 <code>man anacrontab</code>。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/anacrontab</div><div class="line"><span class="comment"># /etc/anacrontab: configuration file for anacron</span></div><div class="line"></div><div class="line"><span class="comment"># See anacron(8) and anacrontab(5) for details.</span></div><div class="line"></div><div class="line">SHELL=/bin/sh</div><div class="line">PATH=/sbin:/bin:/usr/sbin:/usr/bin</div><div class="line">MAILTO=root</div><div class="line"><span class="comment"># the maximal random delay added to the base delay of the jobs</span></div><div class="line">RANDOM_DELAY=45</div><div class="line"><span class="comment"># the jobs will be started during the following hours only</span></div><div class="line">START_HOURS_RANGE=3-22</div><div class="line"></div><div class="line"><span class="comment">#period in days   delay in minutes   job-identifier   command</span></div><div class="line">1       5       cron.daily              nice run-parts /etc/cron.daily</div><div class="line">7       25      cron.weekly             nice run-parts /etc/cron.weekly</div><div class="line">@monthly 45     cron.monthly            nice run-parts /etc/cron.monthly</div></pre></td></tr></table></figure></p>
+<p>简单来说：大多数Linux发行版本，除了有 <code>crontab</code>，还有 <code>anacron</code>，它的使用场景，适用于服务器不能7x24运行，但是有些定时任务又需要运行。 如果在任务还没到执行时间的时候，服务器关机了，那么配置 <code>anacron</code>，下次开机特定时间后（如上面的5分钟运行 cron.daily, 25分钟运行cron.weekly）。<br>配合 RANDOM_DELAY 和 START_HOURS_RANGE 来控制随机的时间。</p>
+<p>这个功能就类似Windows上的计划任务有个设置：<em>如果错过执行时间，下次开机延迟多久后立刻启动</em>。</p>
+<p><strong>解释03:xx运行时刻</strong>：<br>由于我们的服务器是7x24小时，所以不会错过执行时间。默认的设置 <code>START_HOURS_RANGE=3-22</code>，所以是在3点，<br>配合第二列的延迟5分钟，加上随机的45分钟：<br>所以<strong>最终的 <code>cron.daily</code> 的执行时间为： <code>3:05 ~ 3:50</code></strong>， 符合几天的观测结果。</p>
+<h2 id="日志rotate之后，如何reopen，继续在新文件里的写log？"><a href="#日志rotate之后，如何reopen，继续在新文件里的写log？" class="headerlink" title="日志rotate之后，如何reopen，继续在新文件里的写log？"></a>日志rotate之后，如何reopen，继续在新文件里的写log？<a name="reopen"></a></h2><p>主要用到的就是 <code>postrotate</code> 这个hook了，由于logrotate之后，即使已经移走了，但是rsyslog还是持有这个文件操作句柄，会继续往 *log.1.gz 里写，所以需要 restart rsyslog 来 reopen 下 logrotate新创建的同名文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">postrotate</div><div class="line">  /bin/<span class="built_in">kill</span> -HUP $(/bin/cat /var/run/syslogd.pid 2&gt;/dev/null) &amp;&gt;/dev/null</div><div class="line">endscript</div></pre></td></tr></table></figure>
+<p>由于rsyslog的发送端，有本地队列缓存，所以新产生的日志并不会丢失，接收端的rsyslog可以放心的重启。</p>
+<p>那么对于那些不能中断的服务的日志，怎么解决呢，然后重新打开日志文件？<br>logrotate 提供了 <code>copytruncate</code>, 但是会有一定的时间差，丢失部分的日志数据。<br>对于哪些写日志比较频繁的，如debug级别的，更有可能丢失。<br>对于error级别的，应该问题不大。<br><strong>copytruncate 原理</strong>：<br>默认的指令 <code>create</code> 做法，是 移动旧文件，创建新文件，然后用脚本reopen新文件。<br>而 copytruncate 是采用的先拷贝再清空， 先复制一份旧的日志，然后请客原文件，整个过程原来的文件句柄，并没有变化，所以不需要reopen，服务可以不中断。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">copytruncate</div><div class="line">	Truncate the original <span class="built_in">log</span> file <span class="keyword">in</span> place after creating a copy, instead of moving the </div><div class="line">	old <span class="built_in">log</span> file and optionally creating a new one. It can be used when some program </div><div class="line">	cannot be told to close its logfile and thus might <span class="built_in">continue</span> writing (appending) </div><div class="line">	to the previous <span class="built_in">log</span> file forever. **Note that there is a very small time slice between </div><div class="line">	copying the file and truncating it, so some logging data might be lost**. When this</div><div class="line">	option is used, the create option will have no effect, as the old <span class="built_in">log</span> file stays <span class="keyword">in</span> place.</div></pre></td></tr></table></figure>
+<p>另一个解决思路， 引用自 <a href="http://huoding.com/2013/04/21/246" rel="external nofollow noopener noreferrer" target="_blank">被遗忘的Logrotate</a>：</p>
+<blockquote>
+<p>熟悉Apache的朋友可能会记得cronolog，不过Nginx并不支持它，有人通过 <strong>mkfifo</strong> 命令曲线救国，先给日志文件创建管道，再搭配cronolog轮转，虽然理论上没有问题，但效率上有折扣。另外，Debian/Ubuntu下有一个简化版工具savelog，有兴趣可以看看</p>
+</blockquote>
+<p>参考 <a href="https://gist.github.com/ntakaaki/2891895" rel="external nofollow noopener noreferrer" target="_blank">nginx startup script with cronolog</a></p>
+<h2 id="通配符-，missingok-和-olddir-不能同时使用"><a href="#通配符-，missingok-和-olddir-不能同时使用" class="headerlink" title="通配符 *，missingok 和 olddir 不能同时使用"></a>通配符 *，missingok 和 olddir 不能同时使用</h2><p>这个感觉还是logrotate的bug，参考，最新版本仍然存在。参考 <a href="http://superuser.com/questions/1059033/logrotate-wildcard-fails-on-missing-files-with-missingok-and-olddir" rel="external nofollow noopener noreferrer" target="_blank">Logrotate wildcard fails on missing files with “missingok” AND “olddir”</a>。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># If there's no any log under that directory, it will complain:</span></div><div class="line"></div><div class="line">error verifying <span class="built_in">log</span> file path /Data/logs/*/*: No such file or directory</div></pre></td></tr></table></figure></p>
+<ul>
+<li>使用missingok 和 通配符 * 就没问题， 这也是 missingok 字面上的作用。</li>
+<li>使用olddir 和 通配符* 也没有问题，本来也是有问题，<a href="https://github.com/logrotate/logrotate/commit/73493ec38c5e806fa66d8c3f13259775da6282d9" rel="external nofollow noopener noreferrer" target="_blank">最新版刚Fix掉了</a>。</li>
+</ul>
+<blockquote>
+<p>Fix ‘olddir’ usage with wildcard in the middle of path in the pattern…<br>… definition when the pattern did not match any log file.</p>
+</blockquote>
+<p>但是三个合在一起就出问题了， <code>missingok + olddir + *</code> ==&gt; Boom… <code>:(</code></p>
+<p><strong>复现</strong>：在监控的目录pattern（如 <code>/var/logs/*/*.log</code>）下的一个文件夹( <code>/var/log/10.1.2.3.4/</code>)里，保证为空文件夹，不存在 <code>*.log</code> 日志文件<br>此时用 <code>logrotate -d xxx.conf</code> 就会报错。</p>
+<p><strong>目前解决不了</strong>。<br>好在我们的机器够多，日志文件每时每刻都产生，不存在空文件夹，只有刚刚配置logcenter收集服务器的时候，刚启动一段时间有这个可能出现错误，稳定运行后，就不会出现了。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ol>
+<li><a href="https://github.com/logrotate/logrotate" rel="external nofollow noopener noreferrer" target="_blank">logrotate GitHub 项目地址</a></li>
+<li><a href="https://linux.die.net/man/8/logrotate" rel="external nofollow noopener noreferrer" target="_blank">logrotate man page</a></li>
+<li><a href="http://www.thegeekstuff.com/2010/07/logrotate-examples/" rel="external nofollow noopener noreferrer" target="_blank">HowTo: The Ultimate Logrotate Command Tutorial with 10 Examples</a></li>
+<li><a href="http://huoding.com/2013/04/21/246" rel="external nofollow noopener noreferrer" target="_blank">被遗忘的Logrotate</a></li>
+<li><a href="http://serverfault.com/questions/135906/when-does-cron-daily-run" rel="external nofollow noopener noreferrer" target="_blank">When does <code>cron.daily</code> run?</a></li>
+<li><a href="http://www.thegeekstuff.com/2011/05/anacron-examples/" rel="external nofollow noopener noreferrer" target="_blank">Cron Vs Anacron: How to Setup Anacron on Linux</a></li>
+<li><a href="http://serverfault.com/questions/454118/why-does-my-centos-logrotate-run-at-random-times" rel="external nofollow noopener noreferrer" target="_blank">Why does my CentOS logrotate run at random times?</a></li>
+<li><a href="http://superuser.com/questions/1059033/logrotate-wildcard-fails-on-missing-files-with-missingok-and-olddir" rel="external nofollow noopener noreferrer" target="_blank">Logrotate wildcard fails on missing files with “missingok” AND “olddir”</a></li>
+<li><a href="https://gist.github.com/ntakaaki/2891895" rel="external nofollow noopener noreferrer" target="_blank">nginx startup script with cronolog</a></li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/center-log/paille-truck.jpg&quot; alt=&quot;logrtate log&quot;&gt;&lt;/p&gt;
+&lt;p&gt;本文接上篇  &lt;a href=&quot;/articles/center-log-with-rsyslog/&quot;&gt;日志集中化收集（一）：rsyslog 配置&lt;/a&gt;。&lt;br&gt;用 rsyslog 收集了上百G的日志后，得用另一个Linux自带的脚本：&lt;br&gt; &lt;code&gt;/usr/sbin/logrotate&lt;/code&gt; 自动的压缩，分割，归档好历史日志。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="运维" scheme="https://www.karlzhou.com/categories/DevOps/"/>
+    
+    
+      <category term="Linux" scheme="https://www.karlzhou.com/tags/Linux/"/>
+    
+      <category term="DevOps" scheme="https://www.karlzhou.com/tags/DevOps/"/>
+    
+      <category term="Log" scheme="https://www.karlzhou.com/tags/Log/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>2016年终回顾</title>
+    <link href="https://www.karlzhou.com/articles/summary-2016/"/>
+    <id>https://www.karlzhou.com/articles/summary-2016/</id>
+    <published>2016-12-29T20:32:22.000Z</published>
+    <updated>2017-01-25T03:50:18.020Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/summary-2016/monkey-think.jpg" alt="logrtate log"></p>
+<p>还有几天就到新的一年了，趁着2016年的尾巴，简单回顾下今年发生的一些有意思的，有意义的的事情。</p>
+<p>今年最大的变化就是换了工作，来回折腾。</p>
+<h1 id="2016年，…最…"><a href="#2016年，…最…" class="headerlink" title="2016年，…最…"></a>2016年，…最…</h1><ul>
+<li>最大的变化： 换了工作， 外企 -&gt; 国企 -&gt; 创业公司 -&gt; BAT</li>
+</ul>
+<a id="more"></a>
+<p>从毕业后第一个老东家，3年的蜜月期，感谢老东家，珍惜和小伙伴们的欢乐时光。<br>算起来，今年算上老东家，在三个公司呆过，中间短暂的国企，因为各种原因，在实习期满之前迅速离开了。<br>中间收获了各种小伙伴，球友，见识了不同风格的企业做事方法，也算是一种经历了。<br>唯一遗憾的，还是没有找到当初遇见老东家那种心动的感觉。</p>
+<ul>
+<li>技能树的发展： <a href="https://cn.vuejs.org/" rel="external nofollow noopener noreferrer" target="_blank">Vue.js</a> 和 <a href="https://www.ansible.com/" rel="external nofollow noopener noreferrer" target="_blank">Ansible</a></li>
+</ul>
+<p>算起来，今年来回折腾，技术上没有太多进展，比较完整的就是 Vue.js 和 Ansible 了。<br>接触了 Ansible 后才知道以前做了好多naive的工作，很多功能都能快速的用它解决。<br>另外写了一堆 Python 和 shell 的脚本工具，合格的熟练工 <code>:(</code>。<br>目前学习JAVA中。</p>
+<ul>
+<li>第一次去帝都</li>
+</ul>
+<p>长这么大，还没去过咱中国首都呢，第一次去还是前段时间，去北京分公司出差。刚好是雾霾最严重的时候，也算是<strong>为国吸霾</strong>了。<br>对北京的初次印象，是比现在待的城市冷多了，没有想象中的繁华，也有好多老旧房子。<br>出租车司机北京口音很有意思，哈哈。<br>出差几天忙，也没空出去玩，下次去玩，得去看看小学课本上的，我爱北京天安门~~~</p>
+<p><img src="/images/summary-2016/bj-nj.jpg" alt="I-and-she"></p>
+<ul>
+<li>最好看的纪录片： 行星地球II</li>
+</ul>
+<p>第一部的赵忠祥的解说版：“又到了动物交配的季节…”，总是那么喜感。<br>第二部的美景仍然让人心旷神怡，感谢BBC带来这么好的纪录片。</p>
+<ul>
+<li>最好看的美剧： 西部世界、权利的游戏、黑镜</li>
+</ul>
+<p>大学时期的启蒙美剧： 越狱。<br>种草之后，就变成一个美剧控了，喜欢科幻、烧脑的。奈何工作繁忙，只能择优而追。<br>希望能找到武侠小说里，带时间暂停的修炼楼阁…</p>
+<h1 id="新一年的愿望和目标"><a href="#新一年的愿望和目标" class="headerlink" title="新一年的愿望和目标"></a>新一年的愿望和目标</h1><p>人生苦短，白驹过隙，在保证一定生活质量的前提下，有一定的自由度，做自己喜欢做的事情。</p>
+<ul>
+<li>身体健康、身体健康、身体健康，重要的事情说三遍</li>
+</ul>
+<p>工作后，每年体检都或多或少有些毛病，尤其是颈椎不好，也算是职业病了。<br>强迫自己每半个小时活动一下，抽空和小伙伴打球。<br>身体是革命的本钱，革命尚未成功。</p>
+<ul>
+<li>技能树点亮：花较多精力学习JAVA，成为合格的JAVA程序员。</li>
+</ul>
+<p>在新的环境里，多看多问，平台大了，才能有机会处理更多更复杂的场景，踩坑、填坑，涨经验。<br>整理总结复杂业务场景的架构设计，锻炼自己的思维能力。</p>
+<p>最后希望大家<strong>无论多忙也不要忘记和朋友们把酒言欢</strong>！</p>
+<p>共勉！</p>
+<iframe frameborder="0" width="640" height="498" src="https://v.qq.com/iframe/player.html?vid=b03600akimo&tiny=0&auto=0" allowfullscreen></iframe>
+
+
+<p>顺便推荐一下酷壳耗子的： <a href="http://coolshell.cn/articles/17583.html" rel="external nofollow noopener noreferrer" target="_blank">技术人员的发展之路</a><br>(年初，耗子来过老东家交流过一次，抛开八卦不谈，耗子还是很有Leadership的…)</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/summary-2016/monkey-think.jpg&quot; alt=&quot;logrtate log&quot;&gt;&lt;/p&gt;
+&lt;p&gt;还有几天就到新的一年了，趁着2016年的尾巴，简单回顾下今年发生的一些有意思的，有意义的的事情。&lt;/p&gt;
+&lt;p&gt;今年最大的变化就是换了工作，来回折腾。&lt;/p&gt;
+&lt;h1 id=&quot;2016年，…最…&quot;&gt;&lt;a href=&quot;#2016年，…最…&quot; class=&quot;headerlink&quot; title=&quot;2016年，…最…&quot;&gt;&lt;/a&gt;2016年，…最…&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;最大的变化： 换了工作， 外企 -&amp;gt; 国企 -&amp;gt; 创业公司 -&amp;gt; BAT&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="生活" scheme="https://www.karlzhou.com/categories/Life/"/>
+    
+    
+      <category term="Life" scheme="https://www.karlzhou.com/tags/Life/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>日志集中化收集（一）：rsyslog 配置</title>
+    <link href="https://www.karlzhou.com/articles/center-log-with-rsyslog/"/>
+    <id>https://www.karlzhou.com/articles/center-log-with-rsyslog/</id>
+    <published>2016-12-18T16:55:09.000Z</published>
+    <updated>2017-01-25T03:50:18.020Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/center-log/collect-trash.jpg" alt="collect log"></p>
+<p>最近遇到一个需求，需要把线上环境的debug日志及集中化收集起来，一方面是方便开发调试；一方面是避免直接到线上环境查看，存在安全隐患。</p>
+<p>常用可选方案：</p>
+<ol>
+<li>rsyslog发送端 + rsyslog接收端： 直接存在接收端的本地硬盘</li>
+<li>rsyslog发送端 + logstash接收端 + &lt;后续第三方处理&gt;： 接受到log更新行后，通过logstash简单处理后，可以继续往第三方处理，如放到ElasticSearch，或者放到消息队列Kfaka等</li>
+<li>rsyslog发送端 + Splunk： Splunk是商业软件，也是业内用的比较多的方式，价格不菲 </li>
+</ol>
+<a id="more"></a>
+<p>基本原理和处理流程都是类似的： 监控本地log文件内容的变化，然后把变化的文件内容发送到远端收集服务上。<br>例如常说的<a href="https://www.gitbook.com/book/chenryn/elk-stack-guide-cn/details" rel="external nofollow noopener noreferrer" target="_blank">ELKstack</a>（ElasticSearch+Logstash+Kibana）的第一步都是配置rsyslog发送端。</p>
+<p>不管哪种方案都得监控本地文件的变化，rsyslog属于必选。我们需求比较简单，暂时选用了落地到本地盘，默认存储15天debug日志。</p>
+<p>本文主要介绍rsyslog发送端、接收端的配置，以及遇到的一些坑。</p>
+<h1 id="rsyslog-简介"><a href="#rsyslog-简介" class="headerlink" title="rsyslog 简介"></a>rsyslog 简介</h1><p><a href="http://www.rsyslog.com/" rel="external nofollow noopener noreferrer" target="_blank">rsyslog</a> 在Linux上自带，兼容syslog语法，在syslog基础上增加了更多协议的支持，配合额外module插件可以完成很多场景的使用。借用下官网的图片：</p>
+<p><img src="/images/center-log/rsyslog-features-imagemap.png" alt="rsyslog-features-imagemap"></p>
+<p>注： Windows 平台需要 <a href="https://nxlog.co/" rel="external nofollow noopener noreferrer" target="_blank">nxlog</a> （nxlog 是用C 语言写的一个跨平台日志收集处理软件）。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>在CentOS 6.8 Final 上自带的版本为 5.8.10。如需最新版本，可<a href="http://www.rsyslog.com/doc/v8-stable/installation/" rel="external nofollow noopener noreferrer" target="_blank">参考官网</a>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">$ rsyslogd -version</div><div class="line">rsyslogd 5.8.10, compiled with:</div><div class="line">        FEATURE_REGEXP:                         Yes</div><div class="line">        FEATURE_LARGEFILE:                      No</div><div class="line">        GSSAPI Kerberos 5 support:              Yes</div><div class="line">        FEATURE_DEBUG (debug build, slow code): No</div><div class="line">        32bit Atomic operations supported:      Yes</div><div class="line">        64bit Atomic operations supported:      Yes</div><div class="line">        Runtime Instrumentation (slow code):    No</div><div class="line"></div><div class="line">See http://www.rsyslog.com <span class="keyword">for</span> more information.</div></pre></td></tr></table></figure>
+<p>V5版本开发于2010年，属于比较旧的版本，最新版本是V8，支持了更多的字符串处理函数和更多module，当然性能也更好。<br>缺点是：新旧配置语法不兼容，而采用内置版本的另一个偷懒的好处是云端的镜像也不需要再额外升级，能支持更多老机器。</p>
+<p>后面介绍以V5版本为例，如有不同的，会单独指出。</p>
+<h2 id="配置文件介绍"><a href="#配置文件介绍" class="headerlink" title="配置文件介绍"></a>配置文件介绍</h2><p>执行文件： <code>/sbin/rsyslogd</code><br>主配置文件: <code>/etc/rsyslog.conf</code><br>自定义配置文件: <code>/etc/rsyslog.d/*.conf</code><br>修改配置文件后，重启服务： <code>sudo /etc/init.d/rsyslog restart</code></p>
+<p>一份配置文件主要包括以下几个部分：</p>
+<ol>
+<li>MODULES</li>
+<li>RULES</li>
+<li>全局指令，模板，模块参数等</li>
+</ol>
+<p>自带的配置文件如下，参考后面的注释：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div></pre></td><td class="code"><pre><div class="line"># rsyslog v5 configuration file</div><div class="line"></div><div class="line"># For more information see /usr/share/doc/rsyslog-*/rsyslog_conf.html</div><div class="line"># If you experience problems, see http://www.rsyslog.com/doc/troubleshoot.html</div><div class="line"></div><div class="line">#### MODULES ####	               # 模块放在开头加载</div><div class="line"></div><div class="line">$ModLoad imuxsock # provides support for local system logging (e.g. via logger command) # 可以用来调试，稍后有例子</div><div class="line">$ModLoad imklog   # provides kernel logging support (previously done by rklogd)</div><div class="line">#$ModLoad immark  # provides --MARK-- message capability</div><div class="line"></div><div class="line"># Provides UDP syslog reception</div><div class="line">#$ModLoad imudp</div><div class="line">#$UDPServerRun 514</div><div class="line"></div><div class="line"># Provides TCP syslog reception	   # TCP server，接收端需要加载这个模块，发送端不需要</div><div class="line">#$ModLoad imtcp</div><div class="line">#$InputTCPServerRun 514</div><div class="line"></div><div class="line"></div><div class="line">#### GLOBAL DIRECTIVES ####</div><div class="line"></div><div class="line"># Use default timestamp format</div><div class="line">$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat  # 消息格式</div><div class="line"></div><div class="line"># File syncing capability is disabled by default. This feature is usually not required,</div><div class="line"># not useful and an extreme performance hit</div><div class="line">#$ActionFileEnableSync on</div><div class="line"></div><div class="line">#### RULES ####				       # 用来指定哪种类型的，哪种级别的log，发送给谁处理</div><div class="line"></div><div class="line"># Log all kernel messages to the console.</div><div class="line"># Logging much else clutters up the screen.</div><div class="line"># kern.*                                                 /dev/console</div><div class="line"></div><div class="line"># Log anything (except mail) of level info or higher.</div><div class="line"># Don&apos;t log private authentication messages!</div><div class="line">*.info;mail.none;authpriv.none;cron.none                /var/log/messages</div><div class="line"></div><div class="line"># The authpriv file has restricted access.</div><div class="line">authpriv.*                                              /var/log/secure</div><div class="line"></div><div class="line"># Log all the mail messages in one place.</div><div class="line">mail.*                                                  -/var/log/maillog    # &apos;-&apos; 表示异步</div><div class="line"></div><div class="line"></div><div class="line"># Log cron stuff</div><div class="line">cron.*                                                  /var/log/cron</div><div class="line"></div><div class="line"># Everybody gets emergency messages</div><div class="line">*.emerg                                                 *</div><div class="line"></div><div class="line"># Save news errors of level crit and higher in a special file.</div><div class="line">uucp,news.crit                                          /var/log/spooler</div><div class="line"></div><div class="line"># Save boot messages also to boot.log</div><div class="line">local7.*                                                /var/log/boot.log	# local开头的是自定义的日志类型</div><div class="line"></div><div class="line"></div><div class="line"># ### begin forwarding rule ###</div><div class="line"># The statement between the begin ... end define a SINGLE forwarding</div><div class="line"># rule. They belong together, do NOT split them. If you create multiple</div><div class="line"># forwarding rules, duplicate the whole block!</div><div class="line"># Remote Logging (we use TCP for reliable delivery)</div><div class="line">#</div><div class="line"># An on-disk queue is created for this action. If the remote host is</div><div class="line"># down, messages are spooled to disk and sent when it is up again.</div><div class="line">#$WorkDirectory /var/lib/rsyslog # where to place spool files</div><div class="line">#$ActionQueueFileName fwdRule1 # unique name prefix for spool files</div><div class="line">#$ActionQueueMaxDiskSpace 1g   # 1gb space limit (use as much as possible)</div><div class="line">#$ActionQueueSaveOnShutdown on # save messages to disk on shutdown</div><div class="line">#$ActionQueueType LinkedList   # run asynchronously</div><div class="line">#$ActionResumeRetryCount -1    # infinite retries if host is down</div><div class="line"># remote host is: name/ip:port, e.g. 192.168.0.1:514, port optional</div><div class="line">#*.* @@remote-host:514</div><div class="line"># ### end of the forwarding rule ###</div><div class="line"></div><div class="line"># Finally include all config files in /etc/rsyslog.d. This allows overrides</div><div class="line"># of the default configuration above.</div><div class="line">$IncludeConfig /etc/rsyslog.d/*.conf			# 这里会自动加载自定义的*.conf配置文件，可以覆盖默认参数</div></pre></td></tr></table></figure>
+<h1 id="模块-imfile"><a href="#模块-imfile" class="headerlink" title="模块 imfile"></a>模块 imfile</h1><p>为了完成我们的任务，除了上面默认的模块，还需要加载 <code>imfile</code>，,来指定监控哪些文件，<a href="http://www.rsyslog.com/doc/v5-stable/configuration/modules/imfile.html" rel="external nofollow noopener noreferrer" target="_blank">参考文档</a>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$ModLoad</span> imfile  <span class="comment"># Load the imfile input module</span></div></pre></td></tr></table></figure>
+<p>该模块把标准的文本文件转换成syslog的message格式， 所谓标准文本是指：保护可打印的字符，每行以 <code>LF</code> 作为分隔符号。 支持文件正在在logrotate的时候，仍能正确处理。<br>它会把监控文件的读取到哪一个位置（类似游标cursor），存储在state文件里（由 <code>$WorkDirectory</code> 指定）。</p>
+<p>该模块支持如下指令，一组如下设置，可以称为一个 <strong>listener</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$InputFileName</span> /path/to/file   <span class="comment"># 待监控的文件路径</span></div><div class="line"></div><div class="line"><span class="variable">$InputFileTag</span> tag	<span class="comment"># 文件唯一标识tag，最好保持唯一，用于接收端区分原始log文件，可以包含特殊字符，如":"、","等</span></div><div class="line"></div><div class="line"><span class="variable">$InputFileStateFile</span> /path/to/state/file</div><div class="line"><span class="comment"># 【重要】需要保证发送端唯一，记录读取到哪儿，状态文件保存在$WorkDirectory，默认为 /var/lib/rsyslog</span></div><div class="line"><span class="comment">#  如果某个要监控的文件名变化了，一定要重新设置该值</span></div><div class="line"></div><div class="line"><span class="variable">$InputFileFacility</span> facility  <span class="comment"># log类型，默认local0， local开头的表示自定义类型</span></div><div class="line"></div><div class="line"><span class="variable">$InputFileSeverity</span> severity	 <span class="comment"># log级别：info，warning，默认notice</span></div><div class="line"></div><div class="line"><span class="variable">$InputRunFileMonitor</span>		 <span class="comment"># 启动监控当前的文件，如果忘记这行，则啥事也不会发生</span></div><div class="line"></div><div class="line"><span class="variable">$InputFilePollInterval</span> seconds	<span class="comment"># 全局设置，默认轮询是10s</span></div><div class="line"></div><div class="line"><span class="variable">$InputFilePersistStateInterval</span> lines  <span class="comment"># 每多少行更新state文件状态</span></div><div class="line"></div><div class="line"><span class="variable">$InputFileReadMode</span> mode   <span class="comment"># 官网竟然没这个解释，不过也没用到。。。</span></div><div class="line"></div><div class="line"><span class="variable">$InputFileMaxLinesAtOnce</span> number	</div><div class="line"><span class="comment"># 默认10240，如果在发送端，需要同时监控多个文件，会处理完当前文件特定行后，切换到下一个文件，避免一个文件一直占用处理，导致收集别的文件不及时。</span></div><div class="line"></div><div class="line"><span class="variable">$InputFileBindRuleset</span> ruleset  <span class="comment"># 属于较高级的设置，可以把这个listener绑定到特点的规则(http://www.rsyslog.com/doc/v5-stable/concepts/multi_ruleset.html)</span></div></pre></td></tr></table></figure>
+<p>接收端配置，<strong>注意tag里的逗号 <code>&#39;,&#39;</code></strong>，稍后在接收端，会它来分隔：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># For product, total 19 files.</span></div><div class="line"></div><div class="line"><span class="variable">$InputFileName</span>  /Data/logs/product/cache-Statistic.log</div><div class="line"><span class="variable">$InputFileTag</span>   product,cache-Statistic	</div><div class="line"><span class="variable">$InputFileSeverity</span> info</div><div class="line"><span class="variable">$InputFileStateFile</span> state_product_cache-Statistic</div><div class="line"><span class="variable">$InputFilePersistStateInterval</span> 25000</div><div class="line"><span class="variable">$InputFileFacility</span> <span class="built_in">local</span>5</div><div class="line"><span class="variable">$InputRunFileMonitor</span></div></pre></td></tr></table></figure></p>
+<h1 id="Rule-设置"><a href="#Rule-设置" class="headerlink" title="Rule 设置"></a>Rule 设置</h1><p>一条rule的语法格式如： <code>&lt;Facility&gt;.&lt;Severity&gt;  &lt;Target&gt;</code><br>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"># Log cron stuff</div><div class="line">cron.*         /var/log/cron</div><div class="line"></div><div class="line"># 记录info到本地messages文件，.none 结尾表示排除掉这些文件类型。</div><div class="line">*.info;mail.none;authpriv.none;cron.none    /var/log/messages   </div><div class="line"></div><div class="line"># 所有为local5的任意级别日志发送到远端514</div><div class="line">local5.* @@192.168.56.10:514</div></pre></td></tr></table></figure></p>
+<h2 id="Facility"><a href="#Facility" class="headerlink" title="Facility"></a>Facility</h2><p>日志设备(可以理解为日志类型):<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">auth         <span class="comment">#pam产生的日志，认证日志</span></div><div class="line">authpriv     <span class="comment">#ssh,ftp等登录信息的验证信息，认证授权认证</span></div><div class="line">cron         <span class="comment">#时间任务相关</span></div><div class="line">kern         <span class="comment">#内核</span></div><div class="line">lpr          <span class="comment">#打印</span></div><div class="line">mail         <span class="comment">#邮件</span></div><div class="line">mark(syslog) <span class="comment">#rsyslog服务内部的信息,时间标识</span></div><div class="line">news         <span class="comment">#新闻组</span></div><div class="line">user         <span class="comment">#用户程序产生的相关信息</span></div><div class="line">uucp         <span class="comment">#unix to unix copy, unix主机之间相关的通讯</span></div><div class="line"><span class="built_in">local</span> 1~7    <span class="comment">#自定义的日志设备</span></div></pre></td></tr></table></figure></p>
+<h2 id="Severity"><a href="#Severity" class="headerlink" title="Severity"></a>Severity</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">debug           <span class="comment">#有调式信息的，日志信息最多</span></div><div class="line">info            <span class="comment">#一般信息的日志，最常用</span></div><div class="line">notice          <span class="comment">#最具有重要性的普通条件的信息</span></div><div class="line">warning, warn   <span class="comment">#警告级别</span></div><div class="line">err, error      <span class="comment">#错误级别，阻止某个功能或者模块不能正常工作的信息</span></div><div class="line">crit            <span class="comment">#严重级别，阻止整个系统或者整个软件不能正常工作的信息</span></div><div class="line">alert           <span class="comment">#需要立刻修改的信息</span></div><div class="line">emerg, panic    <span class="comment">#内核崩溃等严重信息</span></div></pre></td></tr></table></figure>
+<h2 id="Target"><a href="#Target" class="headerlink" title="Target"></a>Target</h2><ul>
+<li>文件：       /var/log/messages</li>
+<li>用户：       root，*（表示所有用户）， 会发到/var/spool/mail/<user>收件箱里</user></li>
+<li>日志服务器：  @192.168.56.10  或者 @@192.168.56.10</li>
+<li>管道：       | COMMAND</li>
+</ul>
+<p>一个 <code>@</code> 表示 <code>UDP</code>, 两个 <code>@@</code> 表示 <code>TCP</code> 协议。</p>
+<h1 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h1><h2 id="模板-template"><a href="#模板-template" class="headerlink" title="模板$template"></a>模板$template</h2><p>模板 <code>$template</code>， 最主要的一个指令，在 <strong>接收端</strong> 可用来定义消息格式、文件名。主要是在接收端使用。<br>可参考 <a href="http://www.rsyslog.com/doc/v5-stable/configuration/templates.html" rel="external nofollow noopener noreferrer" target="_blank">官方文档Templates</a></p>
+<p>语法：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$template</span> &lt;name&gt;,&lt;内容&gt;,&lt;可选项&gt;</div><div class="line"><span class="variable">$template</span> MyTemplateName,<span class="string">"\7Text %property% some more text\n"</span>,&lt;options&gt;</div></pre></td></tr></table></figure></p>
+<p>默认的消息格式  <code>RSYSLOG_TraditionalFileFormat</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;接收内容的时间&gt;  &lt;发送者的hostname&gt;   &lt;<span class="variable">$InputFileTag</span>&gt; &lt;原始消息%msg%&gt;</div><div class="line">Dec 18 20:39:27 jumper-172-31-56-18 karltestdemoTag blala... dummy msg</div></pre></td></tr></table></figure></p>
+<p>如果只需要显示原始消息，可设置<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$template</span> CleanMsgFormat,<span class="string">"%msg%\n"</span></div></pre></td></tr></table></figure></p>
+<h2 id="内置属性-Properties"><a href="#内置属性-Properties" class="headerlink" title="内置属性 Properties"></a>内置属性 Properties</h2><p>模板里支持一些 <a href="http://www.rsyslog.com/doc/v5-stable/configuration/properties.html" rel="external nofollow noopener noreferrer" target="_blank">内置的变量</a>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">%msg%</div><div class="line">%syslogfacility%</div><div class="line">%HOSTNAME%</div><div class="line">%syslogpriority%</div><div class="line">%timereported:::date-mysql%</div><div class="line">%timegenerated:::date-mysql%</div><div class="line">%iut%</div><div class="line"><span class="string">'%syslogtag%'</span></div></pre></td></tr></table></figure>
+<h2 id="属性处理-Property-Replacer"><a href="#属性处理-Property-Replacer" class="headerlink" title="属性处理 Property Replacer"></a>属性处理 Property Replacer</h2><p><a href="http://www.rsyslog.com/doc/v5-stable/configuration/property_replacer.html" rel="external nofollow noopener noreferrer" target="_blank">Property Replacer</a> 用来处理变量，支持一些简单的字符串处理，如大小写，substring等，类似jinja2的filter概念。<br>版本越新支持的处理函数越强大。<br>语法： <code>%property:fromChar:toChar:options%</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># For product</span></div><div class="line"><span class="variable">$template</span> productFileFormat,<span class="string">"/Data/logs/product/%fromhost-ip%/%syslogtag:F,44:2%-%<span class="variable">$YEAR</span>%%<span class="variable">$MONTH</span>%%<span class="variable">$DAY</span>%.log"</span></div><div class="line"><span class="keyword">if</span> <span class="variable">$syslogtag</span> startswith <span class="string">'product'</span> <span class="keyword">then</span> ?productFileFormat;CleanMsgFormat</div><div class="line">&amp; ~</div></pre></td></tr></table></figure></p>
+<p>上面的例子，在接收端会保存为 <code>/Data/logs/product/198.168.56.123/karltest_demo-20161218.log</code></p>
+<p>解释下这个指令<code>%syslogtag:F,44:2%</code></p>
+<p><code>F,</code> - 代表自定义一个分隔符<br><code>44</code> - 是逗号 <code>,</code> 的 ASCII 码值，如需要别的分隔符，需要查对应 ASCII 值<br><code>2</code>  - 取分隔后的第二个字段</p>
+<p>所以就是： 假设发送端自定义的tag为 <code>$InputFileTag   product,karltest_demo</code>，<br>如果tag以product开始，则取出逗号分隔的第二个字段作为保存的文件名，这也是为啥上面tag里要设置一个逗号的缘故。</p>
+<p>另外，还支持一定的 regex 语法，可以进行更高级的控制。官方提供了一个<a href="http://www.rsyslog.com/regex/" rel="external nofollow noopener noreferrer" target="_blank">在线的 regex 语法测试</a>。<br><em>友情提醒：真的很难用。。。</em></p>
+<h2 id="停止指令"><a href="#停止指令" class="headerlink" title="停止指令"></a>停止指令</h2><p>上面的接收端，在一条规则后，加上了如下的指令（也叫停止指令），代表如果log被当前的rule已经处理过了，则完成本次执行，跳过后续rule的处理。<strong> 类似 C++里 switch/case，如果忘记加break的穿透副作用</strong>。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&amp; ~</div></pre></td></tr></table></figure></p>
+<p>如果没有这个指令，则一条新来的消息可以被多个rule处理。 这里我们并不需要，只要命中就保存到接收端同名的文件里。</p>
+<h1 id="发送端配置"><a href="#发送端配置" class="headerlink" title="发送端配置"></a>发送端配置</h1><ol>
+<li>加载 imfile 模块</li>
+<li>指定要监控的 log 文件路径，设置合适的tag</li>
+<li>指定远端的接收端的地址</li>
+</ol>
+<p>完整配置： <a href="/files/center-log/send-rsyslog-conf.txt">/etc/rsyslog.conf</a>  和 <a href="/files/center-log/send-rsyslogd-product-sample.txt">/etc/rsyslog.d/product.conf</a></p>
+<h1 id="接收端配置"><a href="#接收端配置" class="headerlink" title="接收端配置"></a>接收端配置</h1><ol>
+<li>加载 imtcp 模块</li>
+<li>设置 message 格式</li>
+<li>设置 文件存储路径，文件名格式</li>
+</ol>
+<p>完整配置： <a href="/files/center-log/recv-rsyslog-conf.txt">/etc/rsyslog.conf</a></p>
+<h1 id="遇到的坑"><a href="#遇到的坑" class="headerlink" title="遇到的坑"></a>遇到的坑</h1><h2 id="UDP-or-TCP"><a href="#UDP-or-TCP" class="headerlink" title="UDP or TCP ?"></a>UDP or TCP ?</h2><p>一般来说选择TCP都是OK的，除非忍受部分丢失，在意影响性能，可以改用UDP。<br>但是注意：<strong>如果你的消息每行大小超过了4k，只能用TCP</strong>。这是因为UDP栈大小限制的。</p>
+<p>引用官方有关 <a href="http://www.rsyslog.com/doc/v5-stable/configuration/global/index.html" rel="external nofollow noopener noreferrer" target="_blank">MaxMessageSize</a> 的描述： </p>
+<blockquote>
+<p> Note: testing showed that 4k seems to be the typical maximum for UDP based syslog. This is an IP stack restriction. Not always … but very often. If you go beyond that value, be sure to test that rsyslogd actually does what you think it should do ;) It is highly suggested to use a TCP based transport instead of UDP (plain TCP syslog, RELP). This resolves the UDP stack size restrictions. </p>
+</blockquote>
+<h2 id="如何测试：-vim-vs-echo"><a href="#如何测试：-vim-vs-echo" class="headerlink" title="如何测试： vim vs echo ?"></a>如何测试： vim vs echo ?</h2><p>配置好接收端、发送端rsyslog后，需要验证下是否能正确传送新的log行。</p>
+<ol>
+<li>echo追加： <code>echo &quot;dummy message&quot; &gt;&gt; /Data/logs/product/karltest.log</code></li>
+<li>vim编辑：  <code>vim /Data/logs/product/karltest.log</code></li>
+</ol>
+<p>用vim编辑后，保存会刷新整个文件，导致rsyslog在比较state file的时候，认为全部是新增的行，会在接收端出现重复的log行。<br>所以正确测试方法是用 echo 追加的方式。</p>
+<blockquote>
+<p>Tips:<br>发送端：可以配合 watch 来测试： <code>watch -n 1 &quot; echo $(date) dummy message &gt;&gt; /Data/logs/product/karltest.log &quot;</code><br> 接收端： <code>tailf  /Data/logs/karltest/karltest.log</code></p>
+</blockquote>
+<h2 id="接收端：log行太长，被截断了"><a href="#接收端：log行太长，被截断了" class="headerlink" title="接收端：log行太长，被截断了"></a>接收端：log行太长，被截断了</h2><p>默认大小是2k，大概可以保存1000个中文字符，参考官方说明 <a href="http://www.rsyslog.com/doc/v5-stable/configuration/global/index.html" rel="external nofollow noopener noreferrer" target="_blank">$MaxMessageSize</a>， 最小也是2k。</p>
+<p>在加载imtcp/imudp之前设置， <strong>此配置包括发送和接收，所以rsyslog客户端、服务端都要设置</strong>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$MaxMessageSize</span> 32k</div><div class="line"></div><div class="line"><span class="comment"># Provides TCP syslog reception</span></div><div class="line"><span class="comment">#$ModLoad imtcp</span></div><div class="line"><span class="comment">#$InputTCPServerRun 514</span></div></pre></td></tr></table></figure></p>
+<h2 id="发送端：-var-log-messages-文件变大"><a href="#发送端：-var-log-messages-文件变大" class="headerlink" title="发送端：/var/log/messages 文件变大"></a>发送端：/var/log/messages 文件变大</h2><p>log除了发送到了接收端，还在本地 <code>/var/log/messages</code> 里重复出现了，导致messages上G<br>罪魁祸首是默认的配置文件如下这行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 修改前</span></div><div class="line">*.info;mail.none;authpriv.none;cron.none                            /var/<span class="built_in">log</span>/messages      </div><div class="line"></div><div class="line"><span class="comment"># Fix后</span></div><div class="line">*.info;mail.none;authpriv.none;cron.none;<span class="built_in">local</span>5.none;<span class="built_in">local</span>6.none    /var/<span class="built_in">log</span>/messages</div></pre></td></tr></table></figure>
+<p>因为前面有通配符 <code>*.info</code> 导致我们自定义的 <code>local5.info</code> 也会写到本地messages文件。<br><strong>为了保险，请把接收端、发送端的配置文件都修改掉，忽略掉local5。</strong></p>
+<h2 id="接收端：消息被多个rule处理"><a href="#接收端：消息被多个rule处理" class="headerlink" title="接收端：消息被多个rule处理"></a>接收端：消息被多个rule处理</h2><p>在命中某条rule后，直接break停止</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> <span class="variable">$syslogtag</span> startswith <span class="string">'product'</span> <span class="keyword">then</span> ?productFileFormat;CleanMsgFormat</div><div class="line">&amp; ~</div><div class="line"></div><div class="line"><span class="comment"># 新版本v6之后，变为：</span></div><div class="line"><span class="comment"># rsyslogd: warning: ~ action is deprecated, consider using the 'stop' statement instead [try http://www.rsyslog.com/e/2307 ]</span></div><div class="line"><span class="keyword">if</span> <span class="variable">$syslogtag</span> startswith <span class="string">'product'</span> <span class="keyword">then</span> ?productFileFormat;CleanMsgFormat</div><div class="line">stop</div></pre></td></tr></table></figure>
+<h2 id="接收端：-保存的文件路径不对"><a href="#接收端：-保存的文件路径不对" class="headerlink" title="接收端： 保存的文件路径不对"></a>接收端： 保存的文件路径不对</h2><p>要注意自定义tag的前缀匹配，<strong>如果两个tag有共同的前缀，需要把长的放在前面</strong>，调整好顺序。</p>
+<p>Fix 前：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># For erp_wms</span></div><div class="line"><span class="variable">$template</span> erp_wms_FileFormat,<span class="string">"/Data/logs/erp/wms/%fromhost-ip%/%syslogtag:F,44:2%-%<span class="variable">$YEAR</span>%%<span class="variable">$MONTH</span>%%<span class="variable">$DAY</span>%.log"</span></div><div class="line"><span class="keyword">if</span> <span class="variable">$syslogtag</span> startswith <span class="string">'erp_wms'</span> <span class="keyword">then</span> ?erp_wms_FileFormat;CleanMsgFormat</div><div class="line">&amp; ~</div><div class="line"></div><div class="line"><span class="comment"># For erp_wms3</span></div><div class="line"><span class="variable">$template</span> erp_wms3_FileFormat,<span class="string">"/Data/logs/erp/wms3/%fromhost-ip%/%syslogtag:F,44:2%-%<span class="variable">$YEAR</span>%%<span class="variable">$MONTH</span>%%<span class="variable">$DAY</span>%.log"</span></div><div class="line"><span class="keyword">if</span> <span class="variable">$syslogtag</span> startswith <span class="string">'erp_wms3'</span> <span class="keyword">then</span> ?erp_wms3_FileFormat;CleanMsgFormat</div><div class="line">&amp; ~</div></pre></td></tr></table></figure></p>
+<p>Fix 后：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 这里注意下面的tag的顺序， 一定要让长的tag（erp_wms3）保持在上面，因为他们有共同的前缀(erp_wms)</span></div><div class="line"><span class="comment"># For erp_wms3</span></div><div class="line"><span class="variable">$template</span> erp_wms3_FileFormat,<span class="string">"/Data/logs/erp/wms3/%fromhost-ip%/%syslogtag:F,44:2%-%<span class="variable">$YEAR</span>%%<span class="variable">$MONTH</span>%%<span class="variable">$DAY</span>%.log"</span></div><div class="line"><span class="keyword">if</span> <span class="variable">$syslogtag</span> startswith <span class="string">'erp_wms3'</span> <span class="keyword">then</span> ?erp_wms3_FileFormat;CleanMsgFormat</div><div class="line">&amp; ~</div><div class="line"></div><div class="line"><span class="comment"># For erp_wms</span></div><div class="line"><span class="variable">$template</span> erp_wms_FileFormat,<span class="string">"/Data/logs/erp/wms/%fromhost-ip%/%syslogtag:F,44:2%-%<span class="variable">$YEAR</span>%%<span class="variable">$MONTH</span>%%<span class="variable">$DAY</span>%.log"</span></div><div class="line"><span class="keyword">if</span> <span class="variable">$syslogtag</span> startswith <span class="string">'erp_wms'</span> <span class="keyword">then</span> ?erp_wms_FileFormat;CleanMsgFormat</div><div class="line">&amp; ~</div></pre></td></tr></table></figure></p>
+<h2 id="接收端：-rsyslog-文件名太长后被截断"><a href="#接收端：-rsyslog-文件名太长后被截断" class="headerlink" title="接收端： rsyslog 文件名太长后被截断"></a>接收端： rsyslog 文件名太长后被截断</h2><p>比如发送端原始文件名tag: <code>product，cache_status_im_request.log</code><br>但是到了接收端就截断了： <code>cache_status_im_re-20161218.log</code><br>因为本来名字就长，加上了时间后更长了，</p>
+<p>个人理解，Linux中关于文件名（255），文件路径（4096）的限制如下，而在接收端，都没有超过这个长度。</p>
+<pre><code>$ cat /usr/include/linux/limits.h
+
+#ifndef _LINUX_LIMITS_H
+#define _LINUX_LIMITS_H
+
+#define NR_OPEN         1024
+
+#define NGROUPS_MAX    65536    /* supplemental group IDs are available */
+#define ARG_MAX       131072    /* # bytes of args + environ for exec() */
+#define LINK_MAX         127    /* # links a file may have */
+#define MAX_CANON        255    /* size of the canonical input queue */
+#define MAX_INPUT        255    /* size of the type-ahead buffer */
+#define NAME_MAX         255    /* # chars in a file name */
+#define PATH_MAX        4096    /* # chars in a path name including nul */
+#define PIPE_BUF        4096    /* # bytes in atomic write to a pipe */
+#define XATTR_NAME_MAX   255    /* # chars in an extended attribute name */
+#define XATTR_SIZE_MAX 65536    /* size of an extended attribute value (64k) */
+#define XATTR_LIST_MAX 65536    /* size of extended attribute namelist (64k) */
+
+#define RTSIG_MAX         32
+
+#endif
+</code></pre><p>进过一番艰难的测试复现，猜测是 <code>$InputFileTag</code> 这个 <code>%syslogtag%</code>的原因。</p>
+<p>官方解释<a href="http://www.rsyslog.com/sende-messages-with-tags-larger-than-32-characters/" rel="external nofollow noopener noreferrer" target="_blank">Sending messages with tags larger than 32 characters</a>。</p>
+<p>发送端默认的模板为：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 忽略旧的5.8.6的语法</span></div><div class="line">template (name=<span class="string">"ForwardFormat"</span> <span class="built_in">type</span>=<span class="string">"string"</span> string=<span class="string">"&lt;%PRI%&gt;%TIMESTAMP:::date-rfc3339% %HOSTNAME%</span></div><div class="line">%syslogtag:1:32%%msg:::sp-if-no-1st-sp%%msg%")</div></pre></td></tr></table></figure></p>
+<p>可以看到 <code>%syslogtag:1:32%</code>，被截断到32字符，这个也与我测试的结果一致。</p>
+<p>所以如果需要处理更长的tag，需要修改 发送端的template模板，去掉 <code>:1:32</code> 限制。<br>然后绑定这个模板到对应的target上。<br>注意：接收端可能也要相应处理，才能handle更长的tag名（未测试）。</p>
+<blockquote>
+<p>免责声明：由于折腾这个rsyslog太累，最后一条暂时没有Fix，如有需要，请自行测试后再用。</p>
+</blockquote>
+<p><em>UPDATED @ 2017-01-24</em><br>这个问题越来越严重，所以必须花时间解决掉。</p>
+<p>如下的两个%syslogtag%，由于前32个字符都相同，导致最后日志写到同一个文件 <code>databas.log</code> (按照逗号切割后)了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$InputFileName</span>	/Data/logs/mqorder/order-mq-aws/database-stat.log</div><div class="line"><span class="variable">$InputFileTag</span>   erp_mqorder-order-mq-aws,database-stat		<span class="comment"># 长度39</span></div><div class="line">...</div><div class="line"><span class="variable">$InputFileName</span>	/Data/logs/mqorder/order-mq-aws/database-timeout.log</div><div class="line"><span class="variable">$InputFileTag</span>   erp_mqorder-order-mq-aws,database-timeout   <span class="comment"># 长度42</span></div><div class="line">...</div></pre></td></tr></table></figure>
+<p><strong> 解决方法 </strong>：<br>在发送端的主配置文件 <code>/etc/rsyslog.conf</code>里修改发送规则：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># ### begin forwarding rule ###</span></div><div class="line"><span class="variable">$template</span> LongTagForwardFormat,<span class="string">"&lt;%PRI%&gt;%TIMESTAMP:::date-rfc3339% %HOSTNAME% %syslogtag%%msg:::sp-if-no-1st-sp%%msg%"</span></div><div class="line"><span class="variable">$WorkDirectory</span> /var/lib/rsyslog <span class="comment"># where to place spool files</span></div><div class="line"><span class="variable">$ActionQueueFileName</span> karlzhou_fwdRule           <span class="comment"># unique name prefix for spool files</span></div><div class="line"><span class="variable">$ActionQueueMaxDiskSpace</span> 5g                 <span class="comment"># 5gb space limit (use as much as possible)</span></div><div class="line"><span class="variable">$ActionQueueSaveOnShutdown</span> on               <span class="comment"># save messages to disk on shutdown</span></div><div class="line"><span class="variable">$ActionQueueType</span> LinkedList                 <span class="comment"># run asynchronously</span></div><div class="line"><span class="variable">$ActionResumeRetryCount</span> -1                  <span class="comment"># infinite retries if host is down</span></div><div class="line"><span class="built_in">local</span>5.* @@rsyslog.karlzhou.org:514;LongTagForwardFormat</div><div class="line"></div><div class="line"><span class="comment"># ### end of the forwarding rule ###</span></div></pre></td></tr></table></figure></p>
+<p>其中起作用的就是 <code>LongTagForwardFormat</code> 这个模板。</p>
+<p><strong> 解决过程 </strong>：</p>
+<p>TL;DR</p>
+<p>参考了上面的链接: 官方解释<a href="http://www.rsyslog.com/sende-messages-with-tags-larger-than-32-characters/" rel="external nofollow noopener noreferrer" target="_blank">Sending messages with tags larger than 32 characters</a> 和 <a href="http://help.papertrailapp.com/discussions/questions/458-tag-getting-truncated.html" rel="external nofollow noopener noreferrer" target="_blank">tag getting truncated</a>。</p>
+<p>官方解释里是 5.8.6 的旧的语法，而CentOS6.x Final上自带的是 5.8.10， 语法不一样。<br>从官网下载5.8.10的源码: <a href="http://www.rsyslog.com/files/download/rsyslog/rsyslog-5.8.10.tar.gz" rel="external nofollow noopener noreferrer" target="_blank">http://www.rsyslog.com/files/download/rsyslog/rsyslog-5.8.10.tar.gz</a></p>
+<p>全文搜索关键字 <code>%syslogtag</code>， 最终在如下几个文件找到蛛丝马迹：</p>
+<ul>
+<li>rsyslog-5.8.10/tools/smfwd.c</li>
+<li>rsyslog-5.8.10/tools/smtradfile.c</li>
+<li>rsyslog-5.8.10/tools/smtradfwd.c</li>
+<li>rsyslog-5.8.10/tools/syslogd.c</li>
+</ul>
+<p>全文搜索关键字 <code>ForwardFormat</code>:</p>
+<ul>
+<li>rsyslog-5.8.10/tools/syslogd.c</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">/* hardcoded standard templates (used <span class="keyword">for</span> defaults) */</div><div class="line">static uchar template_DebugFormat[] = <span class="string">"\"Debug line with all properties:\nFROMHOST: '%FROMHOST%', fromhost-ip: '%fromhost-ip%', HOSTNAME: '%HOSTNAME%', PRI: %PRI%,\nsyslogtag '%syslogtag%', programname: '%programname%', APP-NAME: '%APP-NAME%', PROCID: '%PROCID%', MSGID: '%MSGID%',\nTIMESTAMP: '%TIMESTAMP%', STRUCTURED-DATA: '%STRUCTURED-DATA%',\nmsg: '%msg%'\nescaped msg: '%msg:::drop-cc%'\ninputname: %inputname% rawmsg: '%rawmsg%'\n\n\""</span>;</div><div class="line">static uchar template_SyslogProtocol23Format[] = <span class="string">"\"&lt;%PRI%&gt;1 %TIMESTAMP:::date-rfc3339% %HOSTNAME% %APP-NAME% %PROCID% %MSGID% %STRUCTURED-DATA% %msg%\n\""</span>;</div><div class="line">static uchar template_TraditionalFileFormat[] = <span class="string">"=RSYSLOG_TraditionalFileFormat"</span>;</div><div class="line">static uchar template_FileFormat[] = <span class="string">"=RSYSLOG_FileFormat"</span>;</div><div class="line">static uchar template_ForwardFormat[] = <span class="string">"=RSYSLOG_ForwardFormat"</span>;</div><div class="line">static uchar template_TraditionalForwardFormat[] = <span class="string">"=RSYSLOG_TraditionalForwardFormat"</span>;</div><div class="line">static uchar template_WallFmt[] = <span class="string">"\"\r\n\7Message from syslogd@%HOSTNAME% at %timegenerated% ...\r\n %syslogtag%%msg%\n\r\""</span>;</div><div class="line">static uchar template_StdUsrMsgFmt[] = <span class="string">"\" %syslogtag%%msg%\n\r\""</span>;</div><div class="line">static uchar template_StdDBFmt[] = <span class="string">"\"insert into SystemEvents (Message, Facility, FromHost, Priority, DeviceReportedTime, ReceivedAt, InfoUnitID, SysLogTag) values ('%msg%', %syslogfacility%, '%HOSTNAME%', %syslogpriority%, '%timereported:::date-mysql%', '%timegenerated:::date-mysql%', %iut%, '%syslogtag%')\",SQL"</span>;</div><div class="line">static uchar template_StdPgSQLFmt[] = <span class="string">"\"insert into SystemEvents (Message, Facility, FromHost, Priority, DeviceReportedTime, ReceivedAt, InfoUnitID, SysLogTag) values ('%msg%', %syslogfacility%, '%HOSTNAME%', %syslogpriority%, '%timereported:::date-pgsql%', '%timegenerated:::date-pgsql%', %iut%, '%syslogtag%')\",STDSQL"</span>;</div><div class="line">static uchar template_spoofadr[] = <span class="string">"\"%fromhost-ip%\""</span>;</div><div class="line">/* end templates */</div></pre></td></tr></table></figure>
+<p>正如官网链接所说，源码里 hardcoded 里多个默认模板格式，<br>其中我们需要关注的就是 <code>RSYSLOG_ForwardFormat</code>, 对应的文件即：<code>rsyslog-5.8.10/tools/smfwd.c</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">/* smfwd.c</div><div class="line"> * This is a strgen module for the traditional (network) forwarding format.</div><div class="line"> *</div><div class="line"> * Format generated:</div><div class="line"> * &quot;&lt;%PRI%&gt;%TIMESTAMP:::date-rfc3339% %HOSTNAME% %syslogtag:1:32%%msg:::sp-if-no-1st-sp%%msg%&quot;</div><div class="line"> *</div><div class="line"> * NOTE: read comments in module-template.h to understand how this file</div><div class="line"> *       works!</div><div class="line"> *</div><div class="line"> * File begun on 2010-06-01 by RGerhards</div><div class="line"> *</div></pre></td></tr></table></figure>
+<p>这里，就能找到我们需要的正确的默认格式了, 可以看到 %syslogtag% 截取了前面32个字符，把ForwardFormat规则替换成完整的 %syslogtag% 即可，注意：最大的长度是512。</p>
+<h1 id="接下来……"><a href="#接下来……" class="headerlink" title="接下来……"></a>接下来……</h1><p>通过一番设置，我们已经能成功收集若干台线上机器的日志了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># tree -I "*gz|*log" /Data/logs/</span></div><div class="line">/Data/logs/</div><div class="line">├── gateway</div><div class="line">│   ├── 172.31.70.18</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.19</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.195</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.197</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.198</div><div class="line">│   │   └── archived</div><div class="line">│   └── 172.31.70.20</div><div class="line">│       └── archived</div><div class="line">├── product</div><div class="line">│   ├── 172.31.70.118</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.119</div><div class="line">│   │   └── archived</div><div class="line">│   ├── 172.31.70.23</div><div class="line">│   │   └── archived</div><div class="line">│   └── 172.31.70.24</div><div class="line">│       └── archived</div><div class="line">...</div><div class="line"></div><div class="line"><span class="comment"># du -sh /Data/logs</span></div><div class="line">271G    /Data/logs</div></pre></td></tr></table></figure>
+<p>那么问题来了：</p>
+<blockquote>
+<p>上百台机器的上几百G的日志，怎么才能避免接收端硬盘爆掉？</p>
+</blockquote>
+<p>得用另一个Linux自带的脚本 <code>/usr/sbin/logrotate</code>, 来配合 rsyslog。</p>
+<p>请参考： <a href="/articles/center-log-with-logrotate/">日志集中化收集（二）：logrotate 配置</a></p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ol>
+<li><a href="http://www.rsyslog.com/doc/v5-stable/" rel="external nofollow noopener noreferrer" target="_blank">rsyslog官方v5版本文档</a></li>
+<li><a href="http://www.rsyslog.com/doc/v5-stable/configuration/modules/imfile.html" rel="external nofollow noopener noreferrer" target="_blank">rsyslog imfile 模块</a></li>
+<li><a href="http://www.rsyslog.com/doc/v5-stable/configuration/templates.html" rel="external nofollow noopener noreferrer" target="_blank">rsyslog Template</a></li>
+<li><a href="http://www.rsyslog.com/doc/v5-stable/configuration/properties.html" rel="external nofollow noopener noreferrer" target="_blank">rsyslog 内置属性</a></li>
+<li><a href="http://www.rsyslog.com/doc/v5-stable/configuration/property_replacer.html" rel="external nofollow noopener noreferrer" target="_blank">rsyslog 属性处理</a></li>
+<li><a href="http://www.rsyslog.com/storing-messages-from-a-remote-system-into-a-specific-file/" rel="external nofollow noopener noreferrer" target="_blank">Storing Messages from a Remote System into a specific File</a></li>
+<li><a href="http://www.rsyslog.com/writing-specific-messages-to-a-file-and-discarding-them/" rel="external nofollow noopener noreferrer" target="_blank">Writing specific messages to a file and discarding them</a></li>
+<li><a href="http://www.rsyslog.com/sende-messages-with-tags-larger-than-32-characters/" rel="external nofollow noopener noreferrer" target="_blank">Sending messages with tags larger than 32 characters</a></li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/center-log/collect-trash.jpg&quot; alt=&quot;collect log&quot;&gt;&lt;/p&gt;
+&lt;p&gt;最近遇到一个需求，需要把线上环境的debug日志及集中化收集起来，一方面是方便开发调试；一方面是避免直接到线上环境查看，存在安全隐患。&lt;/p&gt;
+&lt;p&gt;常用可选方案：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;rsyslog发送端 + rsyslog接收端： 直接存在接收端的本地硬盘&lt;/li&gt;
+&lt;li&gt;rsyslog发送端 + logstash接收端 + &amp;lt;后续第三方处理&amp;gt;： 接受到log更新行后，通过logstash简单处理后，可以继续往第三方处理，如放到ElasticSearch，或者放到消息队列Kfaka等&lt;/li&gt;
+&lt;li&gt;rsyslog发送端 + Splunk： Splunk是商业软件，也是业内用的比较多的方式，价格不菲 &lt;/li&gt;
+&lt;/ol&gt;
+    
+    </summary>
+    
+      <category term="运维" scheme="https://www.karlzhou.com/categories/DevOps/"/>
+    
+    
+      <category term="Linux" scheme="https://www.karlzhou.com/tags/Linux/"/>
+    
+      <category term="DevOps" scheme="https://www.karlzhou.com/tags/DevOps/"/>
+    
+      <category term="Log" scheme="https://www.karlzhou.com/tags/Log/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>用Travis CI自动部署Hexo博客</title>
+    <link href="https://www.karlzhou.com/2016/05/28/travis-ci-deploy-blog/"/>
+    <id>https://www.karlzhou.com/2016/05/28/travis-ci-deploy-blog/</id>
+    <published>2016-05-28T15:34:49.000Z</published>
+    <updated>2017-01-25T03:50:18.020Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/travis-ci-deploy-blog/build-flow.png" alt="Travis Build Flow"></p>
+<p>通常更新一篇Hexo博客，基本流程是：</p>
+<ol>
+<li><p>本地新建post页面</p>
+<pre><code>hexo n travis-ci-deploy-blog
+INFO  Created: e:\WORK\GitHub\think-diff.me.source\source\_posts\travis-ci-deploy-blog.md
+</code></pre></li>
+<li>在文本编辑器里用markdown语法编辑新建页面</li>
+<li>本地生成public文件：<code>hexo g</code></li>
+<li>启动本地测试web server：<code>hexo s -p 4000 --debug</code></li>
+<li>浏览器打开<code>http://localhost:4000/</code>, 浏览生成文章</li>
+<li>如果满意，即可部署到Github存放page仓库里： <code>hexo d</code></li>
+</ol>
+<a id="more"></a>
+<p>本文主要介绍如何利用TravisCI自动完成第3-6步，同时利用gulp脚本进行html/css/js/images的压缩。</p>
+<h1 id="What-is-Travis-CI"><a href="#What-is-Travis-CI" class="headerlink" title="What is Travis CI?"></a>What is Travis CI?</h1><blockquote class="blockquote-center"><p><img src="/images/common/travis.png" alt="Travis CI"> </p>
+</blockquote>
+<p>CI(Continuous Integration)翻译为持续集成。Travis CI是一个提供持续集成功能的平台，在Github上，可以添加Travis CI，当有code push时候，会推送通知到Travis，根据设置的脚本运行指定任务。</p>
+<p>目前有两个站点:</p>
+<p>1.<a href="https://travis-ci.org/" rel="external nofollow noopener noreferrer" target="_blank">Travis.org</a> 对于所有public项目完全免费</p>
+<p>2.<a href="https://travis-ci.com/" rel="external nofollow noopener noreferrer" target="_blank">Travics.com</a> 只针对private项目，提供更多一些额外功能，如cache，并行build个数</p>
+<p>两个站点只能看到各自的项目，不能通用。</p>
+<h1 id="Why-we-need-Travis-CI"><a href="#Why-we-need-Travis-CI" class="headerlink" title="Why we need Travis CI?"></a>Why we need Travis CI?</h1><p>有人可能会有疑问: 在本地写完博客，直接一个命令<code>hexo d</code>，不就搞定了么， 为啥要费力搞CI？</p>
+<p>的确, 想用TravisCI来自动部署Hexo博客程序，需要不少设置（瞎折腾），为了给大伙信心，列举一些优点：</p>
+<h2 id="优点1：直接在线编辑文件，立即生效"><a href="#优点1：直接在线编辑文件，立即生效" class="headerlink" title="优点1：直接在线编辑文件，立即生效"></a>优点1：直接在线编辑文件，立即生效</h2><p>假设你已经发表了一篇文章，过了几天你在朋友机器上浏览发现有几个明显的错别字，对于有强迫症的，这是不能容忍的。 但你手头又没有完整的hexo+nodejs+git的开发环境，重新下载git，node，hexo配置会花费不少时间，特别不划算。</p>
+<p>如果按照这篇完整折腾完，你可以直接用浏览器访问github个人项目仓库，直接编辑那篇post的原md文件，前后2分钟改完。 稍等片刻，你的博客就自动更新了。</p>
+<h2 id="优点2：自动部署，同时部署到多个地方"><a href="#优点2：自动部署，同时部署到多个地方" class="headerlink" title="优点2：自动部署，同时部署到多个地方"></a>优点2：自动部署，同时部署到多个地方</h2><p>在gitcafe是被收购之前，很多同学（包括我）都是托管在上面的，国内访问速度比Github快很多。<br>配合DNS根据IP位置可以自动选择导到gitcafe, 还是github，甚至你还可以部署到七牛云的静态网站。<br>利用Travis CI可同时更新多个仓库。</p>
+<h2 id="优点3：部署快捷方便"><a href="#优点3：部署快捷方便" class="headerlink" title="优点3：部署快捷方便"></a>优点3：部署快捷方便</h2><p>手动deploy需要推送public整个folder到github上，当后期网站文章、图片较多时候，对于天朝的网络，有时候连接github 就是不顺畅，经常要傻等不少上传时间。<br>有了CI，你可以只提交post文件里单独的md文件即可，很快很爽，谁用谁知道。</p>
+<h2 id="优点4：bigger-than-bigger"><a href="#优点4：bigger-than-bigger" class="headerlink" title="优点4：bigger than bigger"></a>优点4：bigger than bigger<a id="build-icon"></a></h2><p><img src="/images/travis-ci-deploy-blog/passing.svg" alt="build icon"></p>
+<p>你的项目Readme里面可以显示CI build图标，很酷有没有？<br>另外通过设置，可以在当build失败时自动发邮件提醒你。<br>上面的图标，如果登陆后你在Github项目里，直接点击图标，会跳转到你当前项目build的log界面，很方便。</p>
+<p>当然有了CI，你可以做很多事情，如自动运行单元测试，成功后再deploy等等。很多项目里的持续集成基本也是这个道理。</p>
+<h1 id="How-to-use-Travis-CI-to-deploy-hexo-blog"><a href="#How-to-use-Travis-CI-to-deploy-hexo-blog" class="headerlink" title="How to use Travis CI to deploy hexo blog?"></a>How to use Travis CI to deploy hexo blog?</h1><p>这篇教程是用的private项目演示的，多年前领取了Github的Education plan，给了我五个private项目。不管public或者private，步骤都是通用的。<br>我的博客项目设置的Travis脚本<code>.travis.yml</code>会做如下事情：</p>
+<ol>
+<li>从github clone整个项目</li>
+<li>在本地安装nodejs，hexo以及相关node modules</li>
+<li>运行gulp脚本 build文章，包括压缩css、html、js、image</li>
+<li>进入到public folder，初始化一个git仓库，然后推送到github page<br>我用的是user page，也可以是gh-pages，具体区别可参考<a href="https://help.github.com/articles/user-organization-and-project-pages/" rel="external nofollow noopener noreferrer" target="_blank">这里</a></li>
+</ol>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>对于public项目，Travis CI可以自由clone，也就是说有read权限，但是没有write权限，如果什么都不设置，是push不了code的。<br>所以最关键的一步是找到一个安全的方法，让TravisCI拿着Github的token去push code。</p>
+<p><img src="/images/travis-ci-deploy-blog/travis-encrypt-keys.png" alt="Travis加密图解"></p>
+<p>用非对称加密key，简单说就是用<a href="https://docs.travis-ci.com/user/encryption-keys/" rel="external nofollow noopener noreferrer" target="_blank">Travis public key加密</a>，然后Travis用自己的private key去解密，然后使用。<br>至于加密的内容，你可以加密多种东西，以<a href="https://docs.travis-ci.com/user/environment-variables/" rel="external nofollow noopener noreferrer" target="_blank">Travis环境变量</a>的格式引用，下文详述。</p>
+<p>参考了如下几篇文章：</p>
+<p>1.<a href="https://zespia.tw/blog/2015/01/21/continuous-deployment-to-github-with-travis/" rel="external nofollow noopener noreferrer" target="_blank">用 Travis CI 自動部署網站到 GitHub</a> 作者是hexo的发明者<a href="https://github.com/tommy351" rel="external nofollow noopener noreferrer" target="_blank">@tommy351</a>，他的做法是用travis client加密ssh key，然后travis解密拿到key去操作仓库代码。缺点：因为是给的访问github个人账户的ssh私钥，所以权限是full的，可以操作任何部分。</p>
+<p>2.<a href="http://changyuheng.me/2015/when-hexo-static-site-meets-github-pages-and-travis-ci/" rel="external nofollow noopener noreferrer" target="_blank">When Hexo Meets GitHub Pages and Travis CI plus Raspberry Pi</a> 这篇文章讲了一个tricky的方法，github每个仓库可以单独设置访问ssh public key，然后把private key放在Travis的环境变量里面，但是因为key中间有特殊字符，不能直接使用，所以经过base64编码存放在Travis环境变量。然后再travis.yml设置base64 -d解码出来这个环境变量</p>
+<p>3.<a href="http://notes.iissnan.com/2016/publishing-github-pages-with-travis-ci/#comments" rel="external nofollow noopener noreferrer" target="_blank">使用 Travis CI 自动更新 GitHub Pages</a> 这也是本文主要参考的一篇文章，上面图也是借用的这里的。原理：github提供了access token的方法来访问仓库，其实是OAuth2里面的token，每个token可以设置不同的<a href="https://developer.github.com/v3/oauth/#scopes" rel="external nofollow noopener noreferrer" target="_blank">访问scope</a>来控制访问范围。然后加密这个token存放到Travis环境变量里面，后面步骤类似。</p>
+<h2 id="Step-by-Step"><a href="#Step-by-Step" class="headerlink" title="Step by Step"></a>Step by Step</h2><ol>
+<li>准备Travis CI账号, 传送门：<a href="https://travis-ci.org/" rel="external nofollow noopener noreferrer" target="_blank">public项目</a>, <a href="https://travis-ci.com/" rel="external nofollow noopener noreferrer" target="_blank">private项目</a>, 在登陆成功后，可以看到自己的Github项目，然后把开关打开，会自动hook到Github。</li>
+<li>准备Github Personal Access Token。在Github的<a href="https://github.com/settings/profile" rel="external nofollow noopener noreferrer" target="_blank">setting页面</a>，左侧面板选择<a href="https://github.com/settings/tokens" rel="external nofollow noopener noreferrer" target="_blank">Personal access tokens</a>, 右上角点击<code>Generate new token</code>。生成token时候需要确定访问scope，这里我们选择第一个<code>repo</code>即可，参见<a href="https://developer.github.com/v3/oauth/#scopes" rel="external nofollow noopener noreferrer" target="_blank">完整scope介绍</a>。<strong>重要</strong>：生成的token只有第一次可见，一定要保存下来备用。<br><img src="/images/travis-ci-deploy-blog/access-token.png" alt="access token"></li>
+<li><p>准备<a href="https://github.com/travis-ci/travis.rb" rel="external nofollow noopener noreferrer" target="_blank">Travis命令行工具</a>，需要依赖ruby环境。对于Windows环境，可以使用这里的<a href="http://rubyinstaller.org/downloads/" rel="external nofollow noopener noreferrer" target="_blank">安装包</a>，安装完成后可用<code>ruby -v</code>检查。<br>安装命令行工具，参考<a href="https://github.com/travis-ci/travis.rb#installation" rel="external nofollow noopener noreferrer" target="_blank">这里官方文档</a>：</p>
+<pre><code>$ gem install travis -v 1.8.2 --no-rdoc --no-ri
+
+Now make sure everything is working:
+$ travis version
+1.8.2
+</code></pre></li>
+<li><p>加密第2步生成的token，<strong>用Github的</strong>用户名/密码登录这个命令行工具。</p>
+<pre><code>$ travis login
+We need your GitHub login to identify you.
+This information will not be sent to Travis CI, only to GitHub.
+The password will not be displayed.
+
+Try running with --github-token or --auto if you don&apos;t want to enter your password anyway.
+
+Username: rkh
+Password: *******************
+
+Successfully logged in!
+</code></pre><p>登陆成功后，开始加密，参考<a href="https://github.com/travis-ci/travis.rb#encrypt" rel="external nofollow noopener noreferrer" target="_blank">这里</a>：</p>
+<pre><code>travis encrypt -r &lt;github name&gt;/&lt;github repo&gt; GH_Token=XXX
+
+#sample：
+travis encrypt -r zhoujiealex/think-diff.me.source GH_TOKEN=8440d51db2c46xxx
+</code></pre><p>把输出的<code>secure:&quot;xxxx&quot;</code>保存，其中<code>GH_Token</code>是设置的Travis的环境变量名字，git push时候会用到。</p>
+</li>
+<li><p>配置<code>.travis.yml</code>（如果没有，新建），参考<a href="https://docs.travis-ci.com/user/languages/javascript-with-nodejs" rel="external nofollow noopener noreferrer" target="_blank">javascript的guide</a>。最关键的是其中<code>env</code>的部分:</p>
+<pre><code>env:
+ global:
+   - GIT_PAGE_REF: github.com/zhoujiealex/zhoujiealex.github.io.git
+   - secure: &quot;&lt;第4步生成的加密key&gt;&quot;
+</code></pre><p>这里需要<strong>注意</strong>的是：仓库地址，这个地址其实就是你github上存放静态博客最终文件的仓库地址，末尾加上<code>.git</code>。</p>
+</li>
+<li><p>让Travis CI自动向上面设置的仓库地址提交code。这里我用了gulp脚本，来自动调用<code>hexo generate</code>，然后进行压缩，最后deploy。</p>
+</li>
+<li><p><a href="https://docs.travis-ci.com/user/status-images/" rel="external nofollow noopener noreferrer" target="_blank">集成build icon</a>，在Travis CI控制台里，点击那个icon，选择markdown的样式，然后放到项目Readme里即可。</p>
+</li>
+</ol>
+<h1 id="完整配置文件"><a href="#完整配置文件" class="headerlink" title="完整配置文件"></a>完整配置文件</h1><p>完整<code>.travis.yml</code>，参考<a href="https://gist.github.com/zhoujiealex/787870ec64e774a1ac3d5e17e7e0b23c" rel="external nofollow noopener noreferrer" target="_blank">这个gist</a>(翻不了墙的<a href="/files/travis-ci-deploy-blog/travis_yml.txt">看这里</a>)，里面设置了邮件通知，启用node module cache等。主要是环境变量<code>GH_Token</code> 和 <code>GIT_PAGE_REF</code> 使用方式。</p>
+<p>完整<code>gulpfile.js</code>，参考<a href="https://gist.github.com/zhoujiealex/4d926889b02b85d4d8d73f036ef728eb" rel="external nofollow noopener noreferrer" target="_blank">这个gist</a>(翻不了墙的<a href="/files/travis-ci-deploy-blog/gulpfile_js.txt">看这里</a>)。<br>唯一的魔法，就是其中调用Hexo API去generate public文件的部分，参考<a href="https://hexo.io/api/" rel="external nofollow noopener noreferrer" target="_blank">Hexo API</a>, 语法是hexo使用的<a href="https://github.com/petkaantonov/bluebird" rel="external nofollow noopener noreferrer" target="_blank">bluebird</a>的Promise写法，感兴趣具体可自行谷歌。</p>
+<p>我使用的<a href="https://gist.github.com/zhoujiealex/3259ca61efdb12bbdf83aea99d9ff705" rel="external nofollow noopener noreferrer" target="_blank">package.json</a>(翻不了墙的<a href="/files/travis-ci-deploy-blog/package_json.txt">看这里</a>)，如果想使用我的<code>gulpfile.js</code>需要用<code>npm install</code>安装里面的module。</p>
+<p>配置完成后，以后当你本地编辑完md文件后，只需要运行<code>git push orgin master</code>，推送代码到Github就会触发自动Travis CI 自动生成build，部署新的文章。</p>
+<p>最后上一张，点击上面<a href="#build-icon">build那个icon</a>时候，看到的后台Travis CI的build log，如果出错就需要查看这里。</p>
+<p><img src="/images/travis-ci-deploy-blog/build-success.png" alt="travis ci build log"></p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>其实我很早就搞了这个域名，一直没有维护，当时2014年第一次看别人介绍Hexo部署个人博客，感觉很酷，就折腾了下， 托管在GitCafe上。前段时间，一直收到DNSPOD的报警，说网站访问不了了，过了好几天还没恢复，以往都是10分钟以内就能 恢复的。抽空看了下，才知道<a href="http://www.zhihu.com/question/40942874" rel="external nofollow noopener noreferrer" target="_blank">GitCafe被Coding收购</a>了。 没办法我就把站点搬回Github了，又瞎折腾了一堆主题和插件。</p>
+<p>真的很佩服那些持续写博客记录，分享的人，自己也从中学到了很多知识。坚持写作不容易，费时费力。</p>
+<p>最后希望这篇文章能帮助一些小伙伴少走些弯路。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/travis-ci-deploy-blog/build-flow.png&quot; alt=&quot;Travis Build Flow&quot;&gt;&lt;/p&gt;
+&lt;p&gt;通常更新一篇Hexo博客，基本流程是：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;本地新建post页面&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;hexo n travis-ci-deploy-blog
+INFO  Created: e:\WORK\GitHub\think-diff.me.source\source\_posts\travis-ci-deploy-blog.md
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;在文本编辑器里用markdown语法编辑新建页面&lt;/li&gt;
+&lt;li&gt;本地生成public文件：&lt;code&gt;hexo g&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;启动本地测试web server：&lt;code&gt;hexo s -p 4000 --debug&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;浏览器打开&lt;code&gt;http://localhost:4000/&lt;/code&gt;, 浏览生成文章&lt;/li&gt;
+&lt;li&gt;如果满意，即可部署到Github存放page仓库里： &lt;code&gt;hexo d&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+    
+    </summary>
+    
+      <category term="Blog" scheme="https://www.karlzhou.com/categories/Blog/"/>
+    
+    
+      <category term="Hexo" scheme="https://www.karlzhou.com/tags/Hexo/"/>
+    
+      <category term="gulp" scheme="https://www.karlzhou.com/tags/gulp/"/>
+    
+      <category term="Node.js" scheme="https://www.karlzhou.com/tags/Node-js/"/>
+    
+      <category term="持续集成" scheme="https://www.karlzhou.com/tags/%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>用Hexo搭建博客（一）:如何搭建？</title>
+    <link href="https://www.karlzhou.com/2014/10/27/set-blog-with-hexo/"/>
+    <id>https://www.karlzhou.com/2014/10/27/set-blog-with-hexo/</id>
+    <published>2014-10-27T14:57:30.000Z</published>
+    <updated>2014-10-28T22:02:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a href="http://hexo.io/" rel="external nofollow noopener noreferrer" target="_blank">Hexo</a>是来自台湾的<a href="https://github.com/hexojs/hexo" rel="external nofollow noopener noreferrer" target="_blank">@tommy351</a>写的一个轻量的静态博客框架，基于Node.js。<br>引用官网的介绍：</p>
+<blockquote>
+<p>　A fast, simple &amp; powerful blog framework, powered by Node.js.</p>
+</blockquote>
+<p>我们可以利用该框架快速的生成静态博客站点，并用<a href="http://daringfireball.net/projects/markdown/" rel="external nofollow noopener noreferrer" target="_blank">markdown</a>语法书写文章。</p>
+<p>类似的静态博客框架还有</p>
+<ul>
+<li><a href="">Jekyll</a></li>
+<li><a href="">Octopress</a></li>
+</ul>
+<a id="more"></a>
+<h1 id="Hexo-优点"><a href="#Hexo-优点" class="headerlink" title="Hexo 优点"></a>Hexo 优点</h1><p> <a href="http://www.zhihu.com/question/21981094" rel="external nofollow noopener noreferrer" target="_blank">这里</a>有一篇在知乎的讨论：比较了很多博客框架的特点。<br>作者折腾过Jekyll：可直接以markdown在github上发布，github负责解析生成html，设置步骤较多。<br>Octpress本质上也是Jeklly的简化版。<br>Hexo上传的直接是生成好的html页面了，相比Jekyll会快一些。借用官网的介绍：</p>
+<blockquote>
+<ul>
+<li>Blazing Fast：生成静态页面快速</li>
+<li>Markdown Support：不仅支持原生语法，还支持Github的<a href="https://help.github.com/articles/github-flavored-markdown/" rel="external nofollow noopener noreferrer" target="_blank">GFM</a>语法</li>
+<li>One-Command Deployment</li>
+<li>Various <a href="https://github.com/tommy351/hexo/wiki/Plugins" rel="external nofollow noopener noreferrer" target="_blank">Plugins</a></li>
+</ul>
+</blockquote>
+<h1 id="How-to-install-Hexo"><a href="#How-to-install-Hexo" class="headerlink" title="How to install Hexo?"></a>How to install Hexo?</h1><p>这里主要以Windows平台为例介绍。</p>
+<h2 id="安装Git"><a href="#安装Git" class="headerlink" title="安装Git"></a>安装Git</h2><p>移步官网下载<a href="http://git-scm.com/downloads" rel="external nofollow noopener noreferrer" target="_blank">Git</a>，如已安装请跳过。</p>
+<h2 id="安装Node-js"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js</h2><p><a href="http://nodejs.org/" rel="external nofollow noopener noreferrer" target="_blank">Node.js</a>基于Google V8 Javascript引擎，最新版本是v0.10.32。<br>下载安装文件，安装对应平台的<a href="http://nodejs.org/download/" rel="external nofollow noopener noreferrer" target="_blank">版本</a>。</p>
+<h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><p>利用npm即可安装，在命令行里运行：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install -g hexo // -g 参数表示作为全局的 npm module 安装</div></pre></td></tr></table></figure></p>
+<p>当前最新hexo版本是2.8.3。</p>
+<h2 id="初始化blog框架"><a href="#初始化blog框架" class="headerlink" title="初始化blog框架"></a>初始化blog框架</h2><p>在打算书写博客的文件夹如<code>e:\HexoTest\</code>下，在命令行运行如下命令：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo init</div></pre></td></tr></table></figure></p>
+<p>在生成blog框架后，<strong>一定</strong>要运行如下命令，会自动根据初始框架里面的配置，安装一些必备的依赖npm module：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install</div></pre></td></tr></table></figure></p>
+<h2 id="本地测试"><a href="#本地测试" class="headerlink" title="本地测试"></a>本地测试</h2><p>框架中自带了一个<code>hello-world.md</code>的页面，在blog目录执行以下命令，并在浏览器中用<code>http://localhost:4000/</code>查看blog页面：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hexo generate   // 生成静态页面，如 html, js, css 等</div><div class="line">hexo server	 // 默认运行在 4000 port</div></pre></td></tr></table></figure></p>
+<h2 id="发表文章"><a href="#发表文章" class="headerlink" title="发表文章"></a>发表文章</h2><p>1.新建文章<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo n first-post  // 在<span class="built_in">source</span>\_posts\下生成first-post.md文件</div></pre></td></tr></table></figure></p>
+<p>2.用markdown语法修改编辑后，用如下命令生成静态文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo g  // 等价于 hexo generate</div></pre></td></tr></table></figure></p>
+<p>3.发表文章<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo s  // 等价于 hexo server</div></pre></td></tr></table></figure></p>
+<h1 id="部署到Github"><a href="#部署到Github" class="headerlink" title="部署到Github"></a>部署到Github</h1><h2 id="设定域名"><a href="#设定域名" class="headerlink" title="设定域名"></a>设定域名</h2><p>自定义的域名需要保证repository目录下有<code>CNAME</code>文件，其中内容填上域名如<code>think-diff.me</code>。<br>由于<code>.deploy\</code>文件夹每次都是重新生成，需要把CNAME文件放到hexo博客根目录下如<code>..\source\CNAME</code>。<br>参考<a href="https://help.github.com/articles/about-custom-domains-for-github-pages-sites/" rel="external nofollow noopener noreferrer" target="_blank">Github设置页面</a>。</p>
+<p>顶级域名和subdomain<br>添加CNAME生效时间很长大概在48小时内。</p>
+<h1 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h1><ul>
+<li>空格在markdown语法中默认过滤，可以用中文全角的空格代替，刚好两个汉字空格，参考<a href="http://www.zhihu.com/question/21420126" rel="external nofollow noopener noreferrer" target="_blank">这里</a>。</li>
+<li>默认布局模板位于<code>..\scaffolds\</code>，默认使用post模板，可以加入常用的关键字如</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">title: &#123;&#123; title &#125;&#125;</div><div class="line">date: &#123;&#123; date &#125;&#125;</div><div class="line">tags:</div><div class="line">categories:</div><div class="line">description：</div></pre></td></tr></table></figure>
+<ul>
+<li><code>hexo clean</code> 可用来清理已经生成的public静态文件，如有些效果修改后没生效，可以先清理再启动server。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo s -p 8888 --debug</div></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li><a href="http://inching.org/2014/03/22/hexo/" rel="external nofollow noopener noreferrer" target="_blank">使用 Hexo 搭建静态博客</a></li>
+<li><a href="http://ibruce.info/2013/11/22/hexo-your-blog/" rel="external nofollow noopener noreferrer" target="_blank">hexo你的博客</a></li>
+<li><a href="http://zipperary.com/categories/hexo/" rel="external nofollow noopener noreferrer" target="_blank">hexo系列</a></li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;http://hexo.io/&quot; rel=&quot;external nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;Hexo&lt;/a&gt;是来自台湾的&lt;a href=&quot;https://github.com/hexojs/hexo&quot; rel=&quot;external nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;@tommy351&lt;/a&gt;写的一个轻量的静态博客框架，基于Node.js。&lt;br&gt;引用官网的介绍：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;　A fast, simple &amp;amp; powerful blog framework, powered by Node.js.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;我们可以利用该框架快速的生成静态博客站点，并用&lt;a href=&quot;http://daringfireball.net/projects/markdown/&quot; rel=&quot;external nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;markdown&lt;/a&gt;语法书写文章。&lt;/p&gt;
+&lt;p&gt;类似的静态博客框架还有&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;&quot;&gt;Jekyll&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;&quot;&gt;Octopress&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="Blog" scheme="https://www.karlzhou.com/categories/Blog/"/>
+    
+    
+      <category term="Hexo" scheme="https://www.karlzhou.com/tags/Hexo/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>testMD</title>
+    <link href="https://www.karlzhou.com/2014/10/27/testMD/"/>
+    <id>https://www.karlzhou.com/2014/10/27/testMD/</id>
+    <published>2014-10-27T11:05:59.000Z</published>
+    <updated>2017-01-25T03:50:18.020Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Hello-wolrd"><a href="#Hello-wolrd" class="headerlink" title="Hello wolrd!"></a>Hello wolrd!</h1><p>This is my first markdown file.<br><img src="/images/common/Markdown-mark.png" alt="markdown"></p>
+<a id="more"></a>
+<h2 id="Basic-Introduction"><a href="#Basic-Introduction" class="headerlink" title="Basic Introduction"></a>Basic Introduction</h2><table>
+<thead>
+<tr>
+<th>column</th>
+<th>column</th>
+<th>test</th>
+<th>test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>test1</li>
+<li>test2</li>
+<li>tst3</li>
+<li>test4</li>
+</ol>
+<h2 id="code-test"><a href="#code-test" class="headerlink" title="code test"></a>code test</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">print</span><span class="params">()</span>:</span></div><div class="line">     <span class="keyword">print</span> <span class="string">"hello world!"</span></div></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">size_t</span> args)</span></span></div><div class="line">&#123;</div><div class="line">     <span class="keyword">for</span>(<span class="keyword">size_t</span> i=<span class="number">0</span>; i&lt;args; i++)</div><div class="line">     &#123;</div><div class="line">          print(<span class="string">"test%d!"</span>,i);</div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> i=<span class="number">0</span>;</div><div class="line"><span class="keyword">if</span>(i&gt;<span class="number">100</span>) <span class="built_in">console</span>.log(<span class="string">"war..."</span>);</div></pre></td></tr></table></figure>
+<p>@zhoujiealex</p>
+<ul>
+<li>[x] test1</li>
+<li>[ ] test2</li>
+<li>[x] test3 </li>
+</ul>
+<ul>
+<li>1</li>
+<li>2</li>
+<li>3</li>
+<li>4</li>
+<li>5</li>
+<li>111</li>
+</ul>
+<ol>
+<li>1</li>
+<li>2</li>
+<li>3</li>
+<li>4</li>
+<li>5</li>
+<li>6</li>
+</ol>
+<blockquote>
+<p>一盏灯， 一片昏黄； 一简书， 一杯淡茶。 守着那一份淡定， 品读属于自己的寂寞。 保持淡定， 才能欣赏到最美丽的风景！ 保持淡定， 人生从此不再寂寞。</p>
+<p><em>一盏灯</em>， 一片昏黄；<strong>一简书</strong>， 一杯淡茶。 守着那一份淡定， 品读属于自己的寂寞。 保持淡定， 才能欣赏到最美丽的风景！ 保持淡定， 人生从此不再寂寞。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Tables</th>
+<th style="text-align:center">Are</th>
+<th style="text-align:right">Cool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>col 3 is</td>
+<td style="text-align:center">right-aligned</td>
+<td style="text-align:right">$1600</td>
+</tr>
+<tr>
+<td>col 2 is</td>
+<td style="text-align:center">centered</td>
+<td style="text-align:right">$12</td>
+</tr>
+<tr>
+<td>zebra stripes</td>
+<td style="text-align:center">are neat</td>
+<td style="text-align:right">$1</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>dog</th>
+<th>bird</th>
+<th>cat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>foo</td>
+<td>foo</td>
+<td>foo</td>
+</tr>
+<tr>
+<td>bar</td>
+<td>bar</td>
+<td>bar</td>
+</tr>
+<tr>
+<td>baz</td>
+<td>baz</td>
+<td>baz</td>
+</tr>
+</tbody>
+</table>
+<p>test </p>
+<p><img src="http://latex.codecogs.com/gif.latex?\prod%20\(n_{i}\)+1" alt=""></p>
+
+...test raw {{\foo}}
+
+<h1 id="更新日志："><a href="#更新日志：" class="headerlink" title="更新日志："></a>更新日志：</h1><p>2016-05-21 23:40:28 add travis ci to deploy blog automatically, let’s test it.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Hello-wolrd&quot;&gt;&lt;a href=&quot;#Hello-wolrd&quot; class=&quot;headerlink&quot; title=&quot;Hello wolrd!&quot;&gt;&lt;/a&gt;Hello wolrd!&lt;/h1&gt;&lt;p&gt;This is my first markdown file.&lt;br&gt;&lt;img src=&quot;/images/common/Markdown-mark.png&quot; alt=&quot;markdown&quot;&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Test" scheme="https://www.karlzhou.com/categories/Test/"/>
+    
+    
+      <category term="Test" scheme="https://www.karlzhou.com/tags/Test/"/>
+    
+  </entry>
+  
+</feed>

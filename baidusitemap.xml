@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+
+    
+    
+  <url>
+    <loc>https://www.karlzhou.com/2014/10/27/testMD/</loc>
+    <lastmod>2017-01-25T03:50:18.020Z</lastmod>
+    <data>
+        <display>
+        <title>testMD</title>
+        <pubTime>2014-10-27T11:05:59.000Z</pubTime>
+        
+        <tag>Test</tag>
+         
+         
+           
+             
+              <breadCrumb title="Test" url="https://www.karlzhou.com/categories/Test/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://www.karlzhou.com/articles/center-log-with-logrotate/</loc>
+    <lastmod>2017-01-25T03:50:18.020Z</lastmod>
+    <data>
+        <display>
+        <title>日志集中化收集（二）：logrotate 配置</title>
+        <pubTime>2017-01-03T21:55:03.000Z</pubTime>
+        
+        <tag>Linux</tag>
+         
+        <tag>DevOps</tag>
+         
+        <tag>Log</tag>
+         
+         
+           
+             
+              <breadCrumb title="运维" url="https://www.karlzhou.com/categories/DevOps/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://www.karlzhou.com/articles/upgrade-python2.7-centos-simplest-way/</loc>
+    <lastmod>2017-01-25T03:50:18.020Z</lastmod>
+    <data>
+        <display>
+        <title>CentOS6.x 升级Python2.7</title>
+        <pubTime>2017-01-24T17:03:05.000Z</pubTime>
+        
+        <tag>Linux</tag>
+         
+        <tag>Python</tag>
+         
+         
+           
+             
+              <breadCrumb title="Python" url="https://www.karlzhou.com/categories/Python/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://www.karlzhou.com/articles/compress-minify-hexo/</loc>
+    <lastmod>2017-01-25T03:50:18.020Z</lastmod>
+    <data>
+        <display>
+        <title>优化Hexo博客 - 压缩 HTML、CSS、JS、IMG 等</title>
+        <pubTime>2017-01-25T10:06:18.000Z</pubTime>
+        
+        <tag>Hexo</tag>
+         
+        <tag>gulp</tag>
+         
+        <tag>Node.js</tag>
+         
+         
+           
+             
+              <breadCrumb title="Blog" url="https://www.karlzhou.com/categories/Blog/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://www.karlzhou.com/articles/center-log-with-rsyslog/</loc>
+    <lastmod>2017-01-25T03:50:18.020Z</lastmod>
+    <data>
+        <display>
+        <title>日志集中化收集（一）：rsyslog 配置</title>
+        <pubTime>2016-12-18T16:55:09.000Z</pubTime>
+        
+        <tag>Linux</tag>
+         
+        <tag>DevOps</tag>
+         
+        <tag>Log</tag>
+         
+         
+           
+             
+              <breadCrumb title="运维" url="https://www.karlzhou.com/categories/DevOps/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://www.karlzhou.com/articles/summary-2016/</loc>
+    <lastmod>2017-01-25T03:50:18.020Z</lastmod>
+    <data>
+        <display>
+        <title>2016年终回顾</title>
+        <pubTime>2016-12-29T20:32:22.000Z</pubTime>
+        
+        <tag>Life</tag>
+         
+         
+           
+             
+              <breadCrumb title="生活" url="https://www.karlzhou.com/categories/Life/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://www.karlzhou.com/2016/05/28/travis-ci-deploy-blog/</loc>
+    <lastmod>2017-01-25T03:50:18.020Z</lastmod>
+    <data>
+        <display>
+        <title>用Travis CI自动部署Hexo博客</title>
+        <pubTime>2016-05-28T15:34:49.000Z</pubTime>
+        
+        <tag>Hexo</tag>
+         
+        <tag>gulp</tag>
+         
+        <tag>Node.js</tag>
+         
+        <tag>持续集成</tag>
+         
+         
+           
+             
+              <breadCrumb title="Blog" url="https://www.karlzhou.com/categories/Blog/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+    
+    
+    
+    
+  <url>
+    <loc>https://www.karlzhou.com/2014/10/27/set-blog-with-hexo/</loc>
+    <lastmod>2014-10-28T22:02:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>用Hexo搭建博客（一）:如何搭建？</title>
+        <pubTime>2014-10-27T14:57:30.000Z</pubTime>
+        
+        <tag>Hexo</tag>
+         
+         
+           
+             
+              <breadCrumb title="Blog" url="https://www.karlzhou.com/categories/Blog/"/>
+          
+        </display>
+    </data>
+    </url>
+
+</urlset>
